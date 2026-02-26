@@ -1,0 +1,458 @@
+{
+  "Aosta": {
+    "nodes": 823,
+    "edges": 1717,
+    "pairs": [
+      [
+        1743444307,
+        1984366904
+      ],
+      [
+        80074723,
+        1943857017
+      ],
+      [
+        9980206494,
+        1744795524
+      ],
+      [
+        1743339880,
+        1988135987
+      ],
+      [
+        1743445328,
+        1743339798
+      ],
+      [
+        1741366072,
+        742394293
+      ],
+      [
+        958592650,
+        1968286119
+      ],
+      [
+        1741787685,
+        1741790964
+      ],
+      [
+        1301236953,
+        9980206490
+      ],
+      [
+        1342999799,
+        1293746156
+      ]
+    ],
+    "results": {
+      "dijkstra": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 553
+          },
+          {
+            "run": 2,
+            "iterations": 61
+          },
+          {
+            "run": 3,
+            "iterations": 470
+          },
+          {
+            "run": 4,
+            "iterations": 239
+          },
+          {
+            "run": 5,
+            "iterations": 788
+          },
+          {
+            "run": 6,
+            "iterations": 309
+          },
+          {
+            "run": 7,
+            "iterations": 773
+          },
+          {
+            "run": 8,
+            "iterations": 282
+          },
+          {
+            "run": 9,
+            "iterations": 141
+          },
+          {
+            "run": 10,
+            "iterations": 280
+          }
+        ],
+        "average": 389.6
+      },
+      "astar_manhattan": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 553
+          },
+          {
+            "run": 2,
+            "iterations": 61
+          },
+          {
+            "run": 3,
+            "iterations": 469
+          },
+          {
+            "run": 4,
+            "iterations": 239
+          },
+          {
+            "run": 5,
+            "iterations": 788
+          },
+          {
+            "run": 6,
+            "iterations": 309
+          },
+          {
+            "run": 7,
+            "iterations": 773
+          },
+          {
+            "run": 8,
+            "iterations": 282
+          },
+          {
+            "run": 9,
+            "iterations": 141
+          },
+          {
+            "run": 10,
+            "iterations": 280
+          }
+        ],
+        "average": 389.5
+      },
+      "astar_euclidean": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 553
+          },
+          {
+            "run": 2,
+            "iterations": 61
+          },
+          {
+            "run": 3,
+            "iterations": 469
+          },
+          {
+            "run": 4,
+            "iterations": 239
+          },
+          {
+            "run": 5,
+            "iterations": 788
+          },
+          {
+            "run": 6,
+            "iterations": 309
+          },
+          {
+            "run": 7,
+            "iterations": 773
+          },
+          {
+            "run": 8,
+            "iterations": 282
+          },
+          {
+            "run": 9,
+            "iterations": 141
+          },
+          {
+            "run": 10,
+            "iterations": 280
+          }
+        ],
+        "average": 389.5
+      },
+      "astar_haversine": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 543
+          },
+          {
+            "run": 2,
+            "iterations": 61
+          },
+          {
+            "run": 3,
+            "iterations": 434
+          },
+          {
+            "run": 4,
+            "iterations": 232
+          },
+          {
+            "run": 5,
+            "iterations": 787
+          },
+          {
+            "run": 6,
+            "iterations": 282
+          },
+          {
+            "run": 7,
+            "iterations": 772
+          },
+          {
+            "run": 8,
+            "iterations": 264
+          },
+          {
+            "run": 9,
+            "iterations": 141
+          },
+          {
+            "run": 10,
+            "iterations": 272
+          }
+        ],
+        "average": 378.8
+      }
+    }
+  },
+  "Turin": {
+    "nodes": 76483,
+    "edges": 166951,
+    "pairs": [
+      [
+        6416004295,
+        2678474102
+      ],
+      [
+        2925194904,
+        463940533
+      ],
+      [
+        627851297,
+        747044224
+      ],
+      [
+        1057145518,
+        2910946915
+      ],
+      [
+        11280245695,
+        3990450236
+      ],
+      [
+        12967083594,
+        6466506491
+      ],
+      [
+        445345038,
+        4315708536
+      ],
+      [
+        3088497740,
+        2123468047
+      ],
+      [
+        1264074725,
+        460837535
+      ],
+      [
+        283280904,
+        732380311
+      ]
+    ],
+    "results": {
+      "dijkstra": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 33352
+          },
+          {
+            "run": 2,
+            "iterations": 45926
+          },
+          {
+            "run": 3,
+            "iterations": 24498
+          },
+          {
+            "run": 4,
+            "iterations": 14539
+          },
+          {
+            "run": 5,
+            "iterations": 8292
+          },
+          {
+            "run": 6,
+            "iterations": 37264
+          },
+          {
+            "run": 7,
+            "iterations": 14736
+          },
+          {
+            "run": 8,
+            "iterations": 73412
+          },
+          {
+            "run": 9,
+            "iterations": 68091
+          },
+          {
+            "run": 10,
+            "iterations": 704
+          }
+        ],
+        "average": 32081.4
+      },
+      "astar_manhattan": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 33295
+          },
+          {
+            "run": 2,
+            "iterations": 45909
+          },
+          {
+            "run": 3,
+            "iterations": 24476
+          },
+          {
+            "run": 4,
+            "iterations": 14515
+          },
+          {
+            "run": 5,
+            "iterations": 8277
+          },
+          {
+            "run": 6,
+            "iterations": 37224
+          },
+          {
+            "run": 7,
+            "iterations": 14706
+          },
+          {
+            "run": 8,
+            "iterations": 73404
+          },
+          {
+            "run": 9,
+            "iterations": 68084
+          },
+          {
+            "run": 10,
+            "iterations": 703
+          }
+        ],
+        "average": 32059.3
+      },
+      "astar_euclidean": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 33304
+          },
+          {
+            "run": 2,
+            "iterations": 45911
+          },
+          {
+            "run": 3,
+            "iterations": 24481
+          },
+          {
+            "run": 4,
+            "iterations": 14518
+          },
+          {
+            "run": 5,
+            "iterations": 8279
+          },
+          {
+            "run": 6,
+            "iterations": 37230
+          },
+          {
+            "run": 7,
+            "iterations": 14713
+          },
+          {
+            "run": 8,
+            "iterations": 73405
+          },
+          {
+            "run": 9,
+            "iterations": 68086
+          },
+          {
+            "run": 10,
+            "iterations": 703
+          }
+        ],
+        "average": 32063.0
+      },
+      "astar_haversine": {
+        "runs": [
+          {
+            "run": 1,
+            "iterations": 29116
+          },
+          {
+            "run": 2,
+            "iterations": 44655
+          },
+          {
+            "run": 3,
+            "iterations": 23232
+          },
+          {
+            "run": 4,
+            "iterations": 12970
+          },
+          {
+            "run": 5,
+            "iterations": 7656
+          },
+          {
+            "run": 6,
+            "iterations": 34682
+          },
+          {
+            "run": 7,
+            "iterations": 13378
+          },
+          {
+            "run": 8,
+            "iterations": 72428
+          },
+          {
+            "run": 9,
+            "iterations": 67431
+          },
+          {
+            "run": 10,
+            "iterations": 643
+          }
+        ],
+        "average": 30619.1
+      }
+    }
+  }
+}
