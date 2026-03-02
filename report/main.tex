@@ -1,0 +1,98 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{amsmath, amssymb}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{titlesec}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue
+}
+
+% --- Metadata Macros (edit these) ---
+\newcommand{\university}{Politecnico di Torino}
+\newcommand{\department}{Department of Control and Computer Engineering}
+\newcommand{\degree}{Master's Degree in Computer Engineering}
+\newcommand{\academicyear}{2025/2026}
+\newcommand{\course}{Technologies for Autonomous Vehicles}
+\newcommand{\reporttitle}{Assignment 1: Global Path Planning} % e.g., "Report 1"
+\newcommand{\reportdate}{17/03/2026}    % or "Date, \_\_\_"
+
+% Helper to list students as "Name Surname -- S123456"
+\newcommand{\student}[2]{#1 -- #2\\}
+
+% --- Title Page ---
+\begin{document}
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  \includegraphics[width=0.35\textwidth]{img/logo_poli.png}\par
+  \vspace{1cm}
+  {\LARGE \textbf{\university}\par}
+  \vspace{0.3cm}
+  {\large \department\par}
+  \vspace{0.3cm}
+  {\Large \degree\par}
+  \vspace{0.6cm}
+  {\Large \academicyear\par}
+  \vspace{0.8cm}
+  {\LARGE \textbf{\course}\par}
+  \vspace{0.8cm}
+  {\LARGE \textbf{\reporttitle}\par}
+  \vfill
+  {\large \reportdate \par}
+  \vspace{0.2cm}
+  {\large
+  % --- EDIT THE NAMES BELOW ---
+  \student{Fabio Veroli}{S336301}
+  }
+  \vspace*{0.5cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% --- Body ---
+
+\section{Objective}
+
+This report presents the implementation and comparative analysis of two global path planning algorithms, Dijkstra's algorithm and A*, applied to real-world road networks extracted from OpenStreetMap via the \texttt{osmnx} library.
+The primary objective is to evaluate and compare the computational performance of the two algorithms in terms of the number of iterations required to find an optimal path, across two cities of significantly different scale: Aosta and Turin.
+
+Dijkstra's algorithm is used as the baseline, as it guarantees an optimal solution on graphs with non-negative edge weights.
+A* is then implemented in three variants, each employing a different heuristic function to guide the search:
+\begin{itemize}
+  \item \textbf{Manhattan distance} 
+  \item \textbf{Euclidean distance} 
+  \item \textbf{Haversine distance} 
+\end{itemize}
+
+For each algorithm and city, ten origin-destination pairs are evaluated and the average number of iterations is recorded.
+The results are then discussed in relation to graph size (number of nodes and edges) and heuristic choice, with the aim of assessing the practical benefit of informed search over uninformed search.
+
+\section{Design}
+
+\subsection{Dijkstra}
+\subsection{A*}
+
+\section{Experiments}
+
+\section{Results and Discussion}
+
+
+% --- Appendices (optional) ---
+%\appendix
+%\section{Additional Material}
+
+\end{document}
