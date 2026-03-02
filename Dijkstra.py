@@ -5,12 +5,11 @@
 
 import argparse
 import json
-import os
 import osmnx as ox
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import random
 import heapq
+import os 
+from  utils import compute_weights, style_visited_edge, style_active_edge, reset_graph, reconstruct_path
 
 NUM_RUNS = 10   # number of random pairs per city
 
@@ -19,97 +18,9 @@ PLACES = {
     "Turin": "Turin, Piedmont, Italy",
 }
 
-def style_unvisited_edge(edge):        
-    G.edges[edge]["color"] = "gray"
-    G.edges[edge]["alpha"] = 1
-    G.edges[edge]["linewidth"] = 0.2
-
-def style_visited_edge(edge):
-    G.edges[edge]["color"] = "green"
-    G.edges[edge]["alpha"] = 1
-    G.edges[edge]["linewidth"] = 1
-
-def style_active_edge(edge):
-    G.edges[edge]["color"] = "red"
-    G.edges[edge]["alpha"] = 1
-    G.edges[edge]["linewidth"] = 1
-
-def style_path_edge(edge):
-    G.edges[edge]["color"] = "white"
-    G.edges[edge]["alpha"] = 1
-    G.edges[edge]["linewidth"] = 5
-
-def clean_maxspeed():
-    for edge in G.edges:
-        # Cleaning the "maxspeed" attribute, some values are lists, some are strings, some are None
-        maxspeed = 40
-        if "maxspeed" in G.edges[edge]:
-            maxspeed = G.edges[edge]["maxspeed"]
-            if isinstance(maxspeed, list):
-                speeds = [int(s) if s != "walk" else 1 for s in maxspeed]
-                maxspeed = min(speeds)
-            elif isinstance(maxspeed, str):
-                if maxspeed == "walk":
-                    maxspeed = 1
-                else:
-                    # take the numeric part only (handles "50", "50 mph", "50 km/h", etc.)
-                    maxspeed = int(maxspeed.split()[0])
-        G.edges[edge]["maxspeed"] = maxspeed
-        # Adding the "weight" attribute (time = distance / speed)
-        G.edges[edge]["weight"] = G.edges[edge]["length"] / maxspeed
-
-def plot_graph(filepath=None):
-    os.makedirs(os.path.dirname(filepath), exist_ok=True) if filepath else None
-    ox.plot_graph(
-        G,
-        node_size =  [ G.nodes[node]["size"] for node in G.nodes ],
-        edge_color = [ G.edges[edge]["color"] for edge in G.edges ],
-        edge_alpha = [ G.edges[edge]["alpha"] for edge in G.edges ],
-        edge_linewidth = [ G.edges[edge]["linewidth"] for edge in G.edges ],
-        node_color = "white",
-        bgcolor = "black",
-        show = filepath is None,
-        save = filepath is not None,
-        filepath = filepath,
-    )
-    plt.close("all")
-
-def plot_heatmap(filepath):
-    """Color edges by dijkstra_uses frequency using a heatmap colormap."""
-    uses = [G.edges[e]["dijkstra_uses"] for e in G.edges]
-    max_uses = max(uses) if max(uses) > 0 else 1
-    norm = mcolors.Normalize(vmin=0, vmax=max_uses)
-    cmap = plt.get_cmap("plasma")
-    edge_colors = []
-    edge_widths = []
-    for e in G.edges:
-        u = G.edges[e]["dijkstra_uses"]
-        edge_colors.append(mcolors.to_hex(cmap(norm(u))) if u > 0 else "#1a1a1a")
-        edge_widths.append(0.5 + 4.5 * norm(u))  # 0.5 (unused) → 5.0 (max used)
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    ox.plot_graph(
-        G,
-        node_size=0,
-        edge_color=edge_colors,
-        edge_linewidth=edge_widths,
-        edge_alpha=1,
-        node_color="white",
-        bgcolor="black",
-        show=False,
-        save=True,
-        filepath=filepath,
-    )
-    plt.close("all")
-
-def dijkstra(orig, dest):
-    # Reset all node and edge state — ensures no contamination between runs
-    for node in G.nodes:
-        G.nodes[node]["visited"] = False
-        G.nodes[node]["distance"] = float("inf")
-        G.nodes[node]["previous"] = None
-        G.nodes[node]["size"] = 0
-    for edge in G.edges:
-        style_unvisited_edge(edge)
+def dijkstra(G, orig, dest):
+    """Run Dijkstra's algorithm from orig to dest, return number of iterations."""
+    reset_graph(G)
     G.nodes[orig]["distance"] = 0
     G.nodes[orig]["size"] = 50
     G.nodes[dest]["size"] = 50
@@ -122,7 +33,7 @@ def dijkstra(orig, dest):
         if G.nodes[node]["visited"]: continue
         G.nodes[node]["visited"] = True
         for edge in G.out_edges(node):
-            style_visited_edge((edge[0], edge[1], 0))
+            style_visited_edge(G, (edge[0], edge[1], 0))
             neighbor = edge[1]
             weight = G.edges[(edge[0], edge[1], 0)]["weight"]
             if G.nodes[neighbor]["distance"] > G.nodes[node]["distance"] + weight:
@@ -130,29 +41,11 @@ def dijkstra(orig, dest):
                 G.nodes[neighbor]["previous"] = node
                 heapq.heappush(pq, (G.nodes[neighbor]["distance"], neighbor))
                 for edge2 in G.out_edges(neighbor):
-                    style_active_edge((edge2[0], edge2[1], 0))
+                    style_active_edge(G, (edge2[0], edge2[1], 0))
         step += 1
     return None # No path found
 
-def reconstruct_path(orig, dest, plot=False, algorithm=None, filepath=None):
-    for edge in G.edges:
-        style_unvisited_edge(edge)
-    dist = 0
-    curr = dest
-    while curr != orig:
-        prev = G.nodes[curr]["previous"]
-        dist += G.edges[(prev, curr, 0)]["length"]
-        style_path_edge((prev, curr, 0))
-        if algorithm:
-            G.edges[(prev, curr, 0)][f"{algorithm}_uses"] = G.edges[(prev, curr, 0)].get(f"{algorithm}_uses", 0) + 1
-        curr = prev
-    dist /= 1000
-    if plot:
-        plot_graph(filepath=filepath)
-    return dist
-
 def main():
-    global G
     parser = argparse.ArgumentParser(description="Run Dijkstra on OSM city graphs.")
     parser.add_argument(
         "-n", "--runs",
@@ -176,7 +69,7 @@ def main():
         print(f"  Query : {place_query}")
         print(f"  Loading graph...")
         G = ox.graph_from_place(place_query, network_type="drive")
-        clean_maxspeed()
+        compute_weights(G)  # compute "weight" attribute for each edge based on length and maxspeed
         for edge in G.edges:
             G.edges[edge]["dijkstra_uses"] = 0
         print(f"  Graph : {len(G.nodes):,} nodes, {len(G.edges):,} edges")
@@ -191,24 +84,23 @@ def main():
         while i < num_runs:
             start = random.choice(node_list)
             end   = random.choice(node_list)
-            steps = dijkstra(start, end)
+            steps = dijkstra(G, start, end)
             if steps is not None:
                 i += 1
                 pairs.append([start, end])
-                run_results.append({"run": i, "iterations": steps})
-                fp = f"plots/dijkstra_run{i:02d}_{city_abbr}.png"
-                reconstruct_path(start, end, plot=True, algorithm="dijkstra", filepath=fp)
-                print(f"    Run {i:2d}/{num_runs} | Iterations: {steps:6d} | Plot saved: {fp}")
+                run_results.append(steps)
+                city_acronym = "D" + city_name[:2].upper()
+                fp = f"plots/dijkstra/{city_abbr}/run{i:02d}_{city_acronym}.png"
+                dist = reconstruct_path(G, start, end, plot=True, filepath=fp)
+                run_results[-1] = {"iterations": steps, "distance_km": round(dist, 4)}
+                print(f"    Run {i:2d}/{num_runs} | Iterations: {steps:6d} | Distance: {dist:.2f} km | Plot saved: {fp}")
             else:
                 print(f"    Run {i+1:2d}/{num_runs} | No path found, retrying...")
 
         avg = sum(r["iterations"] for r in run_results) / len(run_results)
         print(f"\n    Steps per run : {[r['iterations'] for r in run_results]}")
+        print(f"    Avg distance  : {sum(r['distance_km'] for r in run_results) / len(run_results):.2f} km")
         print(f"    Average steps : {avg:.1f}")
-
-        hm_fp = f"plots/dijkstra_heatmap_{city_abbr}.png"
-        plot_heatmap(hm_fp)
-        print(f"    Heatmap saved : {hm_fp}")
 
         # Save valid pairs for A* reuse
         pairs_fp = f"results/pairs_{city_abbr}.json"

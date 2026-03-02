@@ -4,226 +4,91 @@
     "edges": 1717,
     "pairs": [
       [
-        1743444307,
-        1984366904
-      ],
-      [
-        80074723,
-        1943857017
-      ],
-      [
         9980206494,
-        1744795524
+        1767856794
       ],
       [
-        1743339880,
-        1988135987
+        295093664,
+        3184309082
       ],
       [
-        1743445328,
-        1743339798
+        1270190063,
+        1739851632
       ],
       [
-        1741366072,
-        742394293
+        1767856788,
+        340278193
       ],
       [
-        958592650,
-        1968286119
+        307681275,
+        10237850037
       ],
       [
-        1741787685,
-        1741790964
+        6933168342,
+        330604638
       ],
       [
-        1301236953,
-        9980206490
+        295093734,
+        1743340907
       ],
       [
-        1342999799,
-        1293746156
+        2555343789,
+        802799951
+      ],
+      [
+        1743339183,
+        1745770150
+      ],
+      [
+        1741155335,
+        318619827
       ]
     ],
     "results": {
       "dijkstra": {
         "runs": [
           {
-            "run": 1,
-            "iterations": 553
+            "iterations": 174,
+            "distance_km": 0.8995
           },
           {
-            "run": 2,
-            "iterations": 61
+            "iterations": 382,
+            "distance_km": 1.6431
           },
           {
-            "run": 3,
-            "iterations": 470
+            "iterations": 746,
+            "distance_km": 6.4163
           },
           {
-            "run": 4,
-            "iterations": 239
+            "iterations": 639,
+            "distance_km": 3.038
           },
           {
-            "run": 5,
-            "iterations": 788
+            "iterations": 74,
+            "distance_km": 1.1673
           },
           {
-            "run": 6,
-            "iterations": 309
+            "iterations": 780,
+            "distance_km": 6.3456
           },
           {
-            "run": 7,
-            "iterations": 773
+            "iterations": 806,
+            "distance_km": 7.9748
           },
           {
-            "run": 8,
-            "iterations": 282
+            "iterations": 252,
+            "distance_km": 1.2665
           },
           {
-            "run": 9,
-            "iterations": 141
+            "iterations": 597,
+            "distance_km": 7.6511
           },
           {
-            "run": 10,
-            "iterations": 280
+            "iterations": 140,
+            "distance_km": 0.9214
           }
         ],
-        "average": 389.6
-      },
-      "astar_manhattan": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 553
-          },
-          {
-            "run": 2,
-            "iterations": 61
-          },
-          {
-            "run": 3,
-            "iterations": 469
-          },
-          {
-            "run": 4,
-            "iterations": 239
-          },
-          {
-            "run": 5,
-            "iterations": 788
-          },
-          {
-            "run": 6,
-            "iterations": 309
-          },
-          {
-            "run": 7,
-            "iterations": 773
-          },
-          {
-            "run": 8,
-            "iterations": 282
-          },
-          {
-            "run": 9,
-            "iterations": 141
-          },
-          {
-            "run": 10,
-            "iterations": 280
-          }
-        ],
-        "average": 389.5
-      },
-      "astar_euclidean": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 553
-          },
-          {
-            "run": 2,
-            "iterations": 61
-          },
-          {
-            "run": 3,
-            "iterations": 469
-          },
-          {
-            "run": 4,
-            "iterations": 239
-          },
-          {
-            "run": 5,
-            "iterations": 788
-          },
-          {
-            "run": 6,
-            "iterations": 309
-          },
-          {
-            "run": 7,
-            "iterations": 773
-          },
-          {
-            "run": 8,
-            "iterations": 282
-          },
-          {
-            "run": 9,
-            "iterations": 141
-          },
-          {
-            "run": 10,
-            "iterations": 280
-          }
-        ],
-        "average": 389.5
-      },
-      "astar_haversine": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 543
-          },
-          {
-            "run": 2,
-            "iterations": 61
-          },
-          {
-            "run": 3,
-            "iterations": 434
-          },
-          {
-            "run": 4,
-            "iterations": 232
-          },
-          {
-            "run": 5,
-            "iterations": 787
-          },
-          {
-            "run": 6,
-            "iterations": 282
-          },
-          {
-            "run": 7,
-            "iterations": 772
-          },
-          {
-            "run": 8,
-            "iterations": 264
-          },
-          {
-            "run": 9,
-            "iterations": 141
-          },
-          {
-            "run": 10,
-            "iterations": 272
-          }
-        ],
-        "average": 378.8
+        "average": 459.0
       }
     }
   },
@@ -232,226 +97,91 @@
     "edges": 166951,
     "pairs": [
       [
-        6416004295,
-        2678474102
+        2519739271,
+        3349659189
       ],
       [
-        2925194904,
-        463940533
+        774825009,
+        3274321805
       ],
       [
-        627851297,
-        747044224
+        617529434,
+        3159346230
       ],
       [
-        1057145518,
-        2910946915
+        728268480,
+        10938102800
       ],
       [
-        11280245695,
-        3990450236
+        11709533411,
+        1264074832
       ],
       [
-        12967083594,
-        6466506491
+        2643534227,
+        6411828242
       ],
       [
-        445345038,
-        4315708536
+        446041515,
+        281243560
       ],
       [
-        3088497740,
-        2123468047
+        11709338903,
+        584979577
       ],
       [
-        1264074725,
-        460837535
+        3274190852,
+        2442550310
       ],
       [
-        283280904,
-        732380311
+        2921732871,
+        2319455527
       ]
     ],
     "results": {
       "dijkstra": {
         "runs": [
           {
-            "run": 1,
-            "iterations": 33352
+            "iterations": 31857,
+            "distance_km": 26.6939
           },
           {
-            "run": 2,
-            "iterations": 45926
+            "iterations": 26849,
+            "distance_km": 29.613
           },
           {
-            "run": 3,
-            "iterations": 24498
+            "iterations": 44035,
+            "distance_km": 38.0478
           },
           {
-            "run": 4,
-            "iterations": 14539
+            "iterations": 12821,
+            "distance_km": 10.1388
           },
           {
-            "run": 5,
-            "iterations": 8292
+            "iterations": 72336,
+            "distance_km": 89.2085
           },
           {
-            "run": 6,
-            "iterations": 37264
+            "iterations": 61336,
+            "distance_km": 75.6209
           },
           {
-            "run": 7,
-            "iterations": 14736
+            "iterations": 47476,
+            "distance_km": 34.8127
           },
           {
-            "run": 8,
-            "iterations": 73412
+            "iterations": 53155,
+            "distance_km": 50.4417
           },
           {
-            "run": 9,
-            "iterations": 68091
+            "iterations": 65050,
+            "distance_km": 90.8827
           },
           {
-            "run": 10,
-            "iterations": 704
+            "iterations": 61580,
+            "distance_km": 88.7336
           }
         ],
-        "average": 32081.4
-      },
-      "astar_manhattan": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 33295
-          },
-          {
-            "run": 2,
-            "iterations": 45909
-          },
-          {
-            "run": 3,
-            "iterations": 24476
-          },
-          {
-            "run": 4,
-            "iterations": 14515
-          },
-          {
-            "run": 5,
-            "iterations": 8277
-          },
-          {
-            "run": 6,
-            "iterations": 37224
-          },
-          {
-            "run": 7,
-            "iterations": 14706
-          },
-          {
-            "run": 8,
-            "iterations": 73404
-          },
-          {
-            "run": 9,
-            "iterations": 68084
-          },
-          {
-            "run": 10,
-            "iterations": 703
-          }
-        ],
-        "average": 32059.3
-      },
-      "astar_euclidean": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 33304
-          },
-          {
-            "run": 2,
-            "iterations": 45911
-          },
-          {
-            "run": 3,
-            "iterations": 24481
-          },
-          {
-            "run": 4,
-            "iterations": 14518
-          },
-          {
-            "run": 5,
-            "iterations": 8279
-          },
-          {
-            "run": 6,
-            "iterations": 37230
-          },
-          {
-            "run": 7,
-            "iterations": 14713
-          },
-          {
-            "run": 8,
-            "iterations": 73405
-          },
-          {
-            "run": 9,
-            "iterations": 68086
-          },
-          {
-            "run": 10,
-            "iterations": 703
-          }
-        ],
-        "average": 32063.0
-      },
-      "astar_haversine": {
-        "runs": [
-          {
-            "run": 1,
-            "iterations": 29116
-          },
-          {
-            "run": 2,
-            "iterations": 44655
-          },
-          {
-            "run": 3,
-            "iterations": 23232
-          },
-          {
-            "run": 4,
-            "iterations": 12970
-          },
-          {
-            "run": 5,
-            "iterations": 7656
-          },
-          {
-            "run": 6,
-            "iterations": 34682
-          },
-          {
-            "run": 7,
-            "iterations": 13378
-          },
-          {
-            "run": 8,
-            "iterations": 72428
-          },
-          {
-            "run": 9,
-            "iterations": 67431
-          },
-          {
-            "run": 10,
-            "iterations": 643
-          }
-        ],
-        "average": 30619.1
+        "average": 47649.5
       }
     }
   }
