@@ -13,6 +13,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
 \usepackage{titlesec}
+\usepackage{subcaption}
 
 \hypersetup{
   colorlinks=true,
@@ -87,11 +88,11 @@ The results are then discussed in relation to graph size (number of nodes and ed
 
 Road networks are obtained from OpenStreetMap using the \texttt{osmnx} library.
 For each city, a directed multigraph is constructed by querying the city's administrative boundary with \texttt{network\_type="drive"}, so that only road segments accessible to motor vehicles are included.
-Each node represents a road junction and carries geographic coordinates (longitude and latitude), while each directed edge represents a road segment with attributes such as \texttt{length} (in metres) and \texttt{maxspeed} (in km/h).
+Each node represents a road junction and stores geographic coordinates (longitude and latitude), while each directed edge represents a road segment with attributes such as \texttt{length} (in metres) and \texttt{maxspeed} (in km/h).
 
 \subsection{Edge Weight Computation}
 
-The weight assigned to each edge models travel time rather than physical distance, as path optimisation for vehicles is more practically evaluated in terms of time.
+The weight assigned to each edge models travel time rather than physical distance, as travel time is a more practical optimisation criterion for vehicle routing.
 The weight is defined as:
 \[
   w(e) = \frac{\ell(e)}{v_{\max}(e)}
@@ -102,9 +103,9 @@ where $\ell(e)$ is the length of edge $e$ in metres and $v_{\max}(e)$ is the pos
 
 Dijkstra's algorithm is implemented using a binary min-heap (\texttt{heapq}) as the priority queue.
 Each node maintains a \texttt{distance} label, initialised to $+\infty$ except for the source, which is set to 0.
-At each iteration, the node with the smallest tentative distance is extracted; if it has already been marked as visited it is skipped, otherwise all outgoing neighbours are relaxed.
+At each iteration, the node with the smallest tentative distance is extracted; if it has already been marked as visited, it is skipped; otherwise, all outgoing neighbours are relaxed.
 The algorithm terminates as soon as the destination node is extracted from the queue, guaranteeing optimality on graphs with non-negative edge weights.
-The number of iterations is defined as the count of nodes successfully processed (i.e.\ extracted and not yet visited) before termination.
+The number of iterations is defined as the count of nodes successfully processed (i.e.,\ extracted and not yet visited) before termination. 
 
 \subsection{A* Algorithm}
 
@@ -151,8 +152,8 @@ All three variants share the same min-heap structure, early-termination conditio
 \subsection{Datasets}
 
 Experiments are conducted on the road networks of two cities: Aosta and Turin.
-These cities are intentionally chosen to represent graphs of very different scales, allowing the comparison of algorithm behaviour under both small and large network conditions.
-The graphs sizes are reported in Table~\ref{tab:graphs}.
+These cities are selected to represent graphs of very different scales, allowing the comparison of algorithm behaviour under both small and large network conditions.
+The graph sizes are reported in Table~\ref{tab:graphs}.
 
 \begin{table}[H]
   \centering
@@ -179,13 +180,139 @@ The ten validated pairs are then saved and reused for all three A* variants, ens
 Two metrics are recorded for each run:
 \begin{itemize}
   \item \textbf{Number of iterations}: the count of nodes successfully dequeued and processed before the destination is reached. This is the primary metric for comparing the computational efficiency of the algorithms.
-  \item \textbf{Path length} (km): the total length of the reconstructed path in kilometres. This metric is used to verify that the paths returned by A* are optimal, i.e.\ identical to those returned by Dijkstra on the same pair.
+  \item \textbf{Path length} (km): the total length of the reconstructed path in kilometres. This metric is used to verify that the paths returned by A* are optimal, i.e.,\ identical to those returned by Dijkstra on the same pair.
 \end{itemize}
 
 The average number of iterations over the ten runs is used as the summary statistic for each algorithm–city combination.
 
 \section{Results and Discussion}
 
+\subsection{Aosta}
+
+Table~\ref{tab:results_aosta} reports the number of iterations per run for all four algorithms on the Aosta network.
+All A* variants reduce the number of iterations with respect to Dijkstra in the majority of runs.
+Path lengths are identical across all algorithms for every run, confirming that all three A* variants return optimal paths.
+Figure~\ref{fig:paths_aosta} shows the paths produced on run~4 (3.04~km), confirming that all four solutions follow the same route. 
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{crrrrr}
+    \toprule
+    \textbf{Run} & \textbf{Dijkstra} & \textbf{A* Man.} & \textbf{A* Euc.} & \textbf{A* Hav.} & \textbf{Dist.~(km)} \\
+    \midrule
+    1  &  174 &   47 &   57 &   57 & 0.90 \\
+    2  &  382 &  174 &  211 &  211 & 1.64 \\
+    3  &  746 &  654 &  683 &  684 & 6.42 \\
+    4  &  639 &  164 &  214 &  216 & 3.04 \\
+    5  &   74 &   33 &   35 &   35 & 1.17 \\
+    6  &  780 &  709 &  760 &  760 & 6.35 \\
+    7  &  806 &  768 &  780 &  780 & 7.97 \\
+    8  &  252 &   36 &   48 &   48 & 1.27 \\
+    9  &  597 &  350 &  379 &  379 & 7.65 \\
+    10 &  140 &    9 &    9 &    9 & 0.92 \\
+    \midrule
+    \textbf{Avg} & 459.0 & 294.4 & 317.6 & 317.9 & \\
+    \textbf{Impr.} & --- & $-35.9\%$ & $-30.8\%$ & $-30.7\%$ & \\
+    \bottomrule
+  \end{tabular}
+  \caption{Iterations per run and average improvement over Dijkstra — Aosta (823 nodes, 1\,717 edges).}
+  \label{tab:results_aosta}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/dijkstra/aosta/run04_DAO.png}
+    \caption{Dijkstra (639 iter.)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/manhattan/run04_AAOMAN.png}
+    \caption{A* Manhattan (164 iter.)}
+  \end{subfigure}
+  \vspace{0.5em}
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/euclidean/run04_AAOEUC.png}
+    \caption{A* Euclidean (214 iter.)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/haversine/run04_AAOHAV.png}
+    \caption{A* Haversine (216 iter.)}
+  \end{subfigure}
+  \caption{Paths returned by each algorithm on run~4 in Aosta (3.04~km). All four paths are identical, verifying optimality.}
+  \label{fig:paths_aosta}
+\end{figure}
+
+\subsection{Turin}
+
+Table~\ref{tab:results_turin} reports the results for the Turin network, which is roughly 93 times larger than Aosta.
+As in Aosta, path lengths are identical across all algorithms for every run, confirming optimality.
+Figure~\ref{fig:paths_turin} shows the paths produced on run~4 (10.14~km).
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{crrrrr}
+    \toprule
+    \textbf{Run} & \textbf{Dijkstra} & \textbf{A* Man.} & \textbf{A* Euc.} & \textbf{A* Hav.} & \textbf{Dist.~(km)} \\
+    \midrule
+    1  & 31\,857 &  5\,460 &  6\,629 &  6\,645 & 26.69 \\
+    2  & 26\,849 &  9\,977 & 12\,536 & 12\,557 & 29.61 \\
+    3  & 44\,035 & 15\,451 & 24\,021 & 24\,036 & 38.05 \\
+    4  & 12\,821 &  3\,653 &  5\,102 &  5\,102 & 10.14 \\
+    5  & 72\,336 & 50\,827 & 61\,595 & 61\,598 & 89.21 \\
+    6  & 61\,336 & 48\,949 & 52\,571 & 52\,591 & 75.62 \\
+    7  & 47\,476 & 17\,012 & 24\,413 & 24\,436 & 34.81 \\
+    8  & 53\,155 & 22\,543 & 27\,934 & 27\,978 & 50.44 \\
+    9  & 65\,050 & 37\,234 & 48\,605 & 48\,606 & 90.88 \\
+    10 & 61\,580 & 43\,823 & 49\,402 & 49\,401 & 88.73 \\
+    \midrule
+    \textbf{Avg} & 47\,649.5 & 25\,492.9 & 31\,280.8 & 31\,295.0 & \\
+    \textbf{Impr.} & --- & $-46.5\%$ & $-34.4\%$ & $-34.3\%$ & \\
+    \bottomrule
+  \end{tabular}
+  \caption{Iterations per run and average improvement over Dijkstra — Turin (76\,483 nodes, 166\,951 edges).}
+  \label{tab:results_turin}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/dijkstra/turin/run04_DTU.png}
+    \caption{Dijkstra (12\,821 iter.)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/turin/manhattan/run04_ATUMAN.png}
+    \caption{A* Manhattan (3\,653 iter.)}
+  \end{subfigure}
+  \vspace{0.5em}
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/turin/euclidean/run04_ATUEUC.png}
+    \caption{A* Euclidean (5\,102 iter.)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.38\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/turin/haversine/run04_ATUHAV.png}
+    \caption{A* Haversine (5\,102 iter.)}
+  \end{subfigure}
+  \caption{Paths returned by each algorithm on run~4 in Turin (10.14~km). All four paths are identical, verifying optimality.}
+  \label{fig:paths_turin}
+\end{figure}
+
+\subsection{Discussion}
+
+Across both cities, all A* variants consistently reduce the number of iterations with respect to Dijkstra while preserving path optimality, as confirmed by the identical path lengths reported in Tables~\ref{tab:results_aosta} and~\ref{tab:results_turin}.
+The reduction is more pronounced in Turin than in Aosta: the Manhattan heuristic achieves a $46.5\%$ reduction on the larger graph versus $35.9\%$ on the smaller one.
+This trend is consistent with the expected behaviour of informed search: on a larger graph, Dijkstra explores a proportionally greater fraction of the network before reaching the destination, whereas a well-informed heuristic confines the search to a narrower corridor around the optimal path.
+
+Among the three heuristics, Manhattan consistently outperforms both Euclidean and Haversine in terms of iterations.
+This can be attributed to the fact that, for any two points in the plane, the Manhattan distance is always greater than or equal to the Euclidean distance.
+Since both are admissible lower bounds on the actual travel time, a larger heuristic value provides a tighter estimate of the remaining cost, causing A* to prioritise nodes closer to the destination with greater priority.
+
+The Euclidean and Haversine variants produce nearly identical results in both cities.
+This is expected: at the spatial scale of a single city, the Earth's curvature is negligible, and the great-circle distance computed by the Haversine formula approximates the Euclidean distance on a flat plane.
+
+Overall, the results demonstrate that A* can significantly reduce the computational effort required to find optimal paths in road networks, especially as the graph size increases.
+The choice of heuristic also plays a crucial role, with the Manhattan distance providing the most effective guidance in this context.
 
 % --- Appendices (optional) ---
 %\appendix
