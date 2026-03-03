@@ -83,10 +83,106 @@ The results are then discussed in relation to graph size (number of nodes and ed
 
 \section{Design}
 
-\subsection{Dijkstra}
-\subsection{A*}
+\subsection{Graph Construction}
+
+Road networks are obtained from OpenStreetMap using the \texttt{osmnx} library.
+For each city, a directed multigraph is constructed by querying the city's administrative boundary with \texttt{network\_type="drive"}, so that only road segments accessible to motor vehicles are included.
+Each node represents a road junction and carries geographic coordinates (longitude and latitude), while each directed edge represents a road segment with attributes such as \texttt{length} (in metres) and \texttt{maxspeed} (in km/h).
+
+\subsection{Edge Weight Computation}
+
+The weight assigned to each edge models travel time rather than physical distance, as path optimisation for vehicles is more practically evaluated in terms of time.
+The weight is defined as:
+\[
+  w(e) = \frac{\ell(e)}{v_{\max}(e)}
+\]
+where $\ell(e)$ is the length of edge $e$ in metres and $v_{\max}(e)$ is the posted speed limit in km/h.
+
+\subsection{Dijkstra's Algorithm}
+
+Dijkstra's algorithm is implemented using a binary min-heap (\texttt{heapq}) as the priority queue.
+Each node maintains a \texttt{distance} label, initialised to $+\infty$ except for the source, which is set to 0.
+At each iteration, the node with the smallest tentative distance is extracted; if it has already been marked as visited it is skipped, otherwise all outgoing neighbours are relaxed.
+The algorithm terminates as soon as the destination node is extracted from the queue, guaranteeing optimality on graphs with non-negative edge weights.
+The number of iterations is defined as the count of nodes successfully processed (i.e.\ extracted and not yet visited) before termination.
+
+\subsection{A* Algorithm}
+
+A* extends Dijkstra by incorporating a heuristic function $h(n)$ that estimates the remaining cost from node $n$ to the destination.
+The priority of each node in the queue is:
+\[
+  f(n) = g(n) + h(n)
+\]
+where $g(n)$ is the exact travel-time cost accumulated from the source to $n$.
+To ensure dimensional consistency between $g(n)$ and $h(n)$, each distance-based heuristic estimate (in metres) is normalised by the maximum speed limit $v_{\max}^{\star}$ observed in the graph:
+\[
+  h(n) = \frac{d(n,\, \text{dest})}{v_{\max}^{\star}}
+\]
+Dividing by the maximum speed yields a lower bound on the remaining travel time, which preserves the admissibility condition required for A* to return an optimal path.
+Three functions are used to compute the geometric distance $d$:
+
+\begin{itemize}
+  \item \textbf{Manhattan}: $d = |x_1 - x_2| + |y_1 - y_2|$, where $(x_i, y_i)$ are projected metric coordinates in metres.
+
+  \item \textbf{Euclidean}:
+  \[
+    d = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}
+  \]
+  where $(x_i, y_i)$ are projected metric coordinates in metres.
+  The computation is delegated to \texttt{ox.distance.euclidean}.
+
+  \item \textbf{Haversine}: the great-circle distance between two points on the Earth's surface,
+  given their latitude $\phi$ and longitude $\lambda$ in radians:
+  \begin{align*}
+    a &= \sin^2\!\left(\frac{\Delta\phi}{2}\right)
+       + \cos\phi_1\,\cos\phi_2\,\sin^2\!\left(\frac{\Delta\lambda}{2}\right) \\
+    c &= 2\,\mathrm{atan2}\!\left(\sqrt{a},\,\sqrt{1-a}\right) \\
+    d &= R\,c, \quad R = 6371\text{ km}
+  \end{align*}
+  The computation is delegated to \texttt{ox.distance.great\_circle}, which operates on geographic (lat/lon) coordinates.
+\end{itemize}
+
+For the Manhattan and Euclidean variants, the graph is first projected to a metric coordinate reference system via \texttt{ox.project\_graph}, so that coordinate differences correspond to actual distances in metres.
+The Haversine variant operates on the original unprojected graph, as the formula inherently accounts for the curvature of the Earth.
+All three variants share the same min-heap structure, early-termination condition, and visited-node logic as the Dijkstra implementation.
 
 \section{Experiments}
+
+\subsection{Datasets}
+
+Experiments are conducted on the road networks of two cities: Aosta and Turin.
+These cities are intentionally chosen to represent graphs of very different scales, allowing the comparison of algorithm behaviour under both small and large network conditions.
+The graphs sizes are reported in Table~\ref{tab:graphs}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{City} & \textbf{Nodes} & \textbf{Edges} \\
+    \midrule
+    Aosta  &     823 &      1\,717 \\
+    Turin  & 76\,483 & 166\,951    \\
+    \bottomrule
+  \end{tabular}
+  \caption{Size of the road network graphs used in the experiments.}
+  \label{tab:graphs}
+\end{table}
+
+\subsection{Experimental Protocol}
+
+For each city, ten origin-destination pairs are randomly sampled from the set of graph nodes.
+Dijkstra's algorithm is executed first; any pair for which no path exists is discarded and a new pair is sampled, so that all ten runs correspond to valid paths.
+The ten validated pairs are then saved and reused for all three A* variants, ensuring that every algorithm is evaluated on identical inputs and that the results are directly comparable.
+
+\subsection{Evaluation Metrics}
+
+Two metrics are recorded for each run:
+\begin{itemize}
+  \item \textbf{Number of iterations}: the count of nodes successfully dequeued and processed before the destination is reached. This is the primary metric for comparing the computational efficiency of the algorithms.
+  \item \textbf{Path length} (km): the total length of the reconstructed path in kilometres. This metric is used to verify that the paths returned by A* are optimal, i.e.\ identical to those returned by Dijkstra on the same pair.
+\end{itemize}
+
+The average number of iterations over the ten runs is used as the summary statistic for each algorithm–city combination.
 
 \section{Results and Discussion}
 
