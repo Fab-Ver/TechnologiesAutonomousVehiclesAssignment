@@ -68,7 +68,7 @@
 
 \section{Objective}
 
-This report presents the implementation and comparative analysis of two global path planning algorithms, Dijkstra's algorithm and A*, applied to real-world road networks extracted from OpenStreetMap via the \texttt{osmnx} library.
+This report presents the implementation and comparative analysis of two global path planning algorithms, Dijkstra's algorithm and A*, applied to real-world road networks.
 The primary objective is to evaluate and compare the computational performance of the two algorithms in terms of the number of iterations required to find an optimal path, across two cities of significantly different scale: Aosta and Turin.
 
 Dijkstra's algorithm is used as the baseline, as it guarantees an optimal solution on graphs with non-negative edge weights.
@@ -80,7 +80,7 @@ A* is then implemented in three variants, each employing a different heuristic f
 \end{itemize}
 
 For each algorithm and city, ten origin-destination pairs are evaluated and the average number of iterations is recorded.
-The results are then discussed in relation to graph size (number of nodes and edges) and heuristic choice, with the aim of assessing the practical benefit of informed search over uninformed search.
+The results are then discussed in relation to graph size and heuristic choice, with the aim of assessing the practical benefit of informed search over uninformed search.
 
 \section{Design}
 
@@ -98,7 +98,7 @@ The weight is defined to represent the physical travel time in seconds:
   w(e) = \frac{\ell(e)}{v_{\max}(e) / 3.6}
 \]
 where $\ell(e)$ is the length of edge $e$ in metres and $v_{\max}(e)$ is the posted speed limit in km/h.
-Dividing the speed limit by 3.6 converts it to metres per second, ensuring dimensional consistency.
+Dividing the speed limit by 3.6 converts it to m/s, ensuring dimensional consistency.
 For edges where no speed limit is recorded in OpenStreetMap, a default value of 40~km/h is assumed.
 
 \subsection{Dijkstra's Algorithm}
@@ -185,6 +185,7 @@ Two metrics are recorded for each run:
 \begin{itemize}
   \item \textbf{Number of iterations}: the count of nodes successfully extracted from the priority queue, marked as visited, and whose outgoing neighbours are relaxed, before the destination node is extracted. This is the primary metric for comparing the computational efficiency of the algorithms.
   \item \textbf{Path length} (km): the total length of the reconstructed path in kilometres. This metric is used to verify that the paths returned by A* are optimal, i.e.,\ identical to those returned by Dijkstra on the same pair.
+  \item \textbf{Travel time} (s): the total travel time of the reconstructed path in seconds, computed as the sum of the edge weights along the path. Since the edge weight represents the physical travel time (Section~2.2), this metric provides a second, independent check of solution optimality: an A* path is confirmed optimal when both its length and its travel time match those of the Dijkstra solution.
 \end{itemize}
 
 The average number of iterations over the ten runs is used as the summary statistic for each algorithm–city combination.
@@ -253,7 +254,7 @@ Figure~\ref{fig:paths_aosta} shows the paths produced on run~4 (9.67~km), where 
 \subsection{Turin}
 
 Table~\ref{tab:results_turin} reports the results for the Turin network, which is roughly 93 times larger than Aosta.
-As in Aosta, path lengths are identical across all algorithms for every run, confirming optimality.
+Path lengths are identical across all algorithms for every run, confirming optimality in this case.
 Figure~\ref{fig:paths_turin} shows the paths produced on run~4 (82.40~km).
 
 \begin{table}[H]
@@ -308,7 +309,7 @@ Figure~\ref{fig:paths_turin} shows the paths produced on run~4 (82.40~km).
 \subsection{Discussion}
 
 Across both cities, all A* variants consistently reduce the number of iterations with respect to Dijkstra.
-Path lengths are identical for all algorithm--run combinations, with the sole exception of A* Manhattan on run~3 in Aosta, where the returned path (3.67~km) is marginally longer than the optimal path found by Dijkstra (3.65~km), confirming the non-admissibility discussed in Section~\ref{sec:astar_design}.
+Path lengths are identical for all algorithm--run combinations, with the sole exception of A* Manhattan on run~3 in Aosta, where the returned path is marginally longer than the optimal path found by Dijkstra, confirming the non-admissibility discussed in Section~\ref{sec:astar_design}.
 For these particular origin-destination pairs the Manhattan heuristic achieves a $63.4\%$ reduction in Aosta and a $55.0\%$ reduction in Turin.
 In both cases the reduction in absolute terms is substantial: in Turin, where Dijkstra explores an average of 27\,115 nodes before reaching the destination, A* Manhattan reduces this to 12\,206, a saving of roughly 15\,000 iterations per query.
 
@@ -321,7 +322,7 @@ The Euclidean and Haversine variants produce nearly identical results in both ci
 This is expected: at the spatial scale of a single city, the Earth's curvature is negligible, and the great-circle distance computed by the Haversine formula approximates the Euclidean distance on a flat plane.
 
 Overall, the results demonstrate that A* can significantly reduce the computational effort required to find optimal paths in road networks, especially as the graph size increases.
-The choice of heuristic also plays a crucial role, with the Manhattan distance providing the most effective guidance in this context.
+The choice of heuristic also plays a crucial role, with the Manhattan distance providing the most effective guidance in this context, but at the cost of losing the theoretical guarantee of optimality.
 
 % --- Appendices (optional) ---
 %\appendix
