@@ -1,537 +1,537 @@
 {
   "Aosta": {
-    "nodes": 823,
-    "edges": 1717,
+    "nodes": 825,
+    "edges": 1723,
     "pairs": [
       [
-        1743339983,
-        10011672081
+        1743446933,
+        2738673385
       ],
       [
-        8014192502,
-        1741154447
+        1741792329,
+        321852812
       ],
       [
-        2006339061,
-        302908168
+        963648979,
+        1743445319
       ],
       [
-        8820730436,
-        1943375144
+        1743339183,
+        307681270
       ],
       [
-        1741791321,
-        1278291546
+        340277537,
+        1271059984
       ],
       [
-        302033355,
-        295093668
+        9979608917,
+        1748061624
       ],
       [
-        10237850045,
-        1741788539
+        963649034,
+        295179162
       ],
       [
-        302921672,
-        963648931
+        1741786125,
+        1286253341
       ],
       [
-        2362456384,
-        1767856835
+        1874494366,
+        2014356988
       ],
       [
-        1984109740,
-        3930501817
+        1600830947,
+        9979608919
       ]
     ],
     "results": {
       "dijkstra": {
         "runs": [
           {
-            "iterations": 304,
-            "distance_km": 7.8294,
-            "travel_time_s": 636.65
+            "iterations": 106,
+            "distance_km": 2.4503,
+            "travel_time_s": 220.52
           },
           {
-            "iterations": 453,
-            "distance_km": 2.3477,
-            "travel_time_s": 194.89
+            "iterations": 563,
+            "distance_km": 4.6907,
+            "travel_time_s": 387.29
           },
           {
-            "iterations": 402,
-            "distance_km": 3.6481,
-            "travel_time_s": 268.62
+            "iterations": 724,
+            "distance_km": 4.1493,
+            "travel_time_s": 339.73
           },
           {
-            "iterations": 819,
-            "distance_km": 9.6659,
-            "travel_time_s": 742.92
+            "iterations": 751,
+            "distance_km": 8.6907,
+            "travel_time_s": 733.19
           },
           {
-            "iterations": 397,
-            "distance_km": 3.1061,
-            "travel_time_s": 265.45
+            "iterations": 211,
+            "distance_km": 1.5967,
+            "travel_time_s": 157.73
           },
           {
-            "iterations": 368,
-            "distance_km": 1.4721,
-            "travel_time_s": 168.61
+            "iterations": 717,
+            "distance_km": 4.3311,
+            "travel_time_s": 329.58
           },
           {
-            "iterations": 497,
-            "distance_km": 2.4183,
-            "travel_time_s": 197.33
+            "iterations": 489,
+            "distance_km": 2.6829,
+            "travel_time_s": 212.46
           },
           {
-            "iterations": 153,
-            "distance_km": 0.9747,
-            "travel_time_s": 73.44
+            "iterations": 464,
+            "distance_km": 1.782,
+            "travel_time_s": 147.76
           },
           {
-            "iterations": 490,
-            "distance_km": 1.6959,
-            "travel_time_s": 146.87
+            "iterations": 680,
+            "distance_km": 4.43,
+            "travel_time_s": 398.7
           },
           {
-            "iterations": 64,
-            "distance_km": 0.6105,
-            "travel_time_s": 55.9
+            "iterations": 202,
+            "distance_km": 4.2535,
+            "travel_time_s": 371.43
           }
         ],
-        "average": 394.7
+        "average": 490.7
       },
       "astar_manhattan": {
         "runs": [
           {
-            "iterations": 137,
-            "distance_km": 7.8294,
-            "travel_time_s": 636.65
+            "iterations": 62,
+            "distance_km": 2.4503,
+            "travel_time_s": 220.52
           },
           {
-            "iterations": 126,
-            "distance_km": 2.3477,
-            "travel_time_s": 194.89
+            "iterations": 83,
+            "distance_km": 4.6907,
+            "travel_time_s": 387.29
           },
           {
-            "iterations": 159,
-            "distance_km": 3.6717,
-            "travel_time_s": 270.37
+            "iterations": 501,
+            "distance_km": 4.1493,
+            "travel_time_s": 339.73
           },
           {
-            "iterations": 443,
-            "distance_km": 9.6659,
-            "travel_time_s": 742.92
+            "iterations": 337,
+            "distance_km": 8.6907,
+            "travel_time_s": 733.19
           },
           {
-            "iterations": 115,
-            "distance_km": 3.1061,
-            "travel_time_s": 265.45
+            "iterations": 92,
+            "distance_km": 1.5967,
+            "travel_time_s": 157.73
           },
           {
-            "iterations": 123,
-            "distance_km": 1.4721,
-            "travel_time_s": 168.61
+            "iterations": 412,
+            "distance_km": 4.3311,
+            "travel_time_s": 329.58
           },
           {
-            "iterations": 191,
-            "distance_km": 2.4183,
-            "travel_time_s": 197.33
+            "iterations": 157,
+            "distance_km": 2.6829,
+            "travel_time_s": 212.46
           },
           {
-            "iterations": 34,
-            "distance_km": 0.9747,
-            "travel_time_s": 73.44
+            "iterations": 113,
+            "distance_km": 1.782,
+            "travel_time_s": 147.76
           },
           {
-            "iterations": 93,
-            "distance_km": 1.6959,
-            "travel_time_s": 146.87
+            "iterations": 144,
+            "distance_km": 4.43,
+            "travel_time_s": 398.7
           },
           {
-            "iterations": 22,
-            "distance_km": 0.6105,
-            "travel_time_s": 55.9
+            "iterations": 86,
+            "distance_km": 4.2535,
+            "travel_time_s": 371.43
           }
         ],
-        "average": 144.3
+        "average": 198.7
       },
       "astar_euclidean": {
         "runs": [
           {
-            "iterations": 146,
-            "distance_km": 7.8294,
-            "travel_time_s": 636.65
+            "iterations": 62,
+            "distance_km": 2.4503,
+            "travel_time_s": 220.52
           },
           {
-            "iterations": 169,
-            "distance_km": 2.3477,
-            "travel_time_s": 194.89
+            "iterations": 121,
+            "distance_km": 4.6907,
+            "travel_time_s": 387.29
           },
           {
-            "iterations": 230,
-            "distance_km": 3.6481,
-            "travel_time_s": 268.62
+            "iterations": 580,
+            "distance_km": 4.1493,
+            "travel_time_s": 339.73
           },
           {
-            "iterations": 683,
-            "distance_km": 9.6659,
-            "travel_time_s": 742.92
+            "iterations": 397,
+            "distance_km": 8.6907,
+            "travel_time_s": 733.19
           },
           {
-            "iterations": 153,
-            "distance_km": 3.1061,
-            "travel_time_s": 265.45
+            "iterations": 116,
+            "distance_km": 1.5967,
+            "travel_time_s": 157.73
           },
           {
-            "iterations": 177,
-            "distance_km": 1.4721,
-            "travel_time_s": 168.61
+            "iterations": 531,
+            "distance_km": 4.3311,
+            "travel_time_s": 329.58
           },
           {
-            "iterations": 261,
-            "distance_km": 2.4183,
-            "travel_time_s": 197.33
+            "iterations": 204,
+            "distance_km": 2.6829,
+            "travel_time_s": 212.46
           },
           {
-            "iterations": 54,
-            "distance_km": 0.9747,
-            "travel_time_s": 73.44
+            "iterations": 132,
+            "distance_km": 1.782,
+            "travel_time_s": 147.76
           },
           {
-            "iterations": 154,
-            "distance_km": 1.6959,
-            "travel_time_s": 146.87
+            "iterations": 190,
+            "distance_km": 4.43,
+            "travel_time_s": 398.7
           },
           {
-            "iterations": 29,
-            "distance_km": 0.6105,
-            "travel_time_s": 55.9
+            "iterations": 98,
+            "distance_km": 4.2535,
+            "travel_time_s": 371.43
           }
         ],
-        "average": 205.6
+        "average": 243.1
       },
       "astar_haversine": {
         "runs": [
           {
-            "iterations": 146,
-            "distance_km": 7.8294,
-            "travel_time_s": 636.65
+            "iterations": 62,
+            "distance_km": 2.4503,
+            "travel_time_s": 220.52
           },
           {
-            "iterations": 169,
-            "distance_km": 2.3477,
-            "travel_time_s": 194.89
+            "iterations": 121,
+            "distance_km": 4.6907,
+            "travel_time_s": 387.29
           },
           {
-            "iterations": 231,
-            "distance_km": 3.6481,
-            "travel_time_s": 268.62
+            "iterations": 580,
+            "distance_km": 4.1493,
+            "travel_time_s": 339.73
           },
           {
-            "iterations": 685,
-            "distance_km": 9.6659,
-            "travel_time_s": 742.92
+            "iterations": 397,
+            "distance_km": 8.6907,
+            "travel_time_s": 733.19
           },
           {
-            "iterations": 153,
-            "distance_km": 3.1061,
-            "travel_time_s": 265.45
+            "iterations": 116,
+            "distance_km": 1.5967,
+            "travel_time_s": 157.73
           },
           {
-            "iterations": 178,
-            "distance_km": 1.4721,
-            "travel_time_s": 168.61
+            "iterations": 532,
+            "distance_km": 4.3311,
+            "travel_time_s": 329.58
           },
           {
-            "iterations": 261,
-            "distance_km": 2.4183,
-            "travel_time_s": 197.33
+            "iterations": 204,
+            "distance_km": 2.6829,
+            "travel_time_s": 212.46
           },
           {
-            "iterations": 54,
-            "distance_km": 0.9747,
-            "travel_time_s": 73.44
+            "iterations": 132,
+            "distance_km": 1.782,
+            "travel_time_s": 147.76
           },
           {
-            "iterations": 156,
-            "distance_km": 1.6959,
-            "travel_time_s": 146.87
+            "iterations": 198,
+            "distance_km": 4.43,
+            "travel_time_s": 398.7
           },
           {
-            "iterations": 29,
-            "distance_km": 0.6105,
-            "travel_time_s": 55.9
+            "iterations": 98,
+            "distance_km": 4.2535,
+            "travel_time_s": 371.43
           }
         ],
-        "average": 206.2
+        "average": 244.0
       }
     }
   },
   "Turin": {
-    "nodes": 76483,
-    "edges": 166951,
+    "nodes": 11766,
+    "edges": 25198,
     "pairs": [
       [
-        3469391156,
-        5996655028
+        443101931,
+        8221720032
       ],
       [
-        6437742066,
-        474738326
+        248428818,
+        1264896110
       ],
       [
-        1334455147,
-        122495121
+        747042875,
+        7709656757
       ],
       [
-        6407524132,
-        733928975
+        746574500,
+        12105977628
       ],
       [
-        1987042765,
-        1635277147
+        248158370,
+        1234664951
       ],
       [
-        6371022468,
-        3366204463
+        254908001,
+        956877880
       ],
       [
-        2827315969,
-        11603201725
+        451677780,
+        1271055510
       ],
       [
-        9480675152,
-        3979090376
+        12146865087,
+        246519369
       ],
       [
-        3356187586,
-        317168537
+        553094991,
+        9987562653
       ],
       [
-        1940529373,
-        4676712247
+        914206036,
+        5349144720
       ]
     ],
     "results": {
       "dijkstra": {
         "runs": [
           {
-            "iterations": 7867,
-            "distance_km": 27.8008,
-            "travel_time_s": 1868.15
+            "iterations": 4949,
+            "distance_km": 4.0109,
+            "travel_time_s": 305.18
           },
           {
-            "iterations": 59949,
-            "distance_km": 53.025,
-            "travel_time_s": 3547.66
+            "iterations": 9506,
+            "distance_km": 6.659,
+            "travel_time_s": 517.52
           },
           {
-            "iterations": 2767,
-            "distance_km": 12.1855,
-            "travel_time_s": 518.32
+            "iterations": 6694,
+            "distance_km": 7.0334,
+            "travel_time_s": 525.25
           },
           {
-            "iterations": 47926,
-            "distance_km": 82.3968,
-            "travel_time_s": 3860.54
+            "iterations": 10908,
+            "distance_km": 9.7198,
+            "travel_time_s": 776.9
           },
           {
-            "iterations": 3509,
-            "distance_km": 16.8332,
-            "travel_time_s": 1224.06
+            "iterations": 5100,
+            "distance_km": 3.6389,
+            "travel_time_s": 349.06
           },
           {
-            "iterations": 37602,
-            "distance_km": 18.6108,
-            "travel_time_s": 1439.25
+            "iterations": 6971,
+            "distance_km": 9.8871,
+            "travel_time_s": 759.75
           },
           {
-            "iterations": 24966,
-            "distance_km": 26.1862,
-            "travel_time_s": 1461.68
+            "iterations": 2227,
+            "distance_km": 3.9373,
+            "travel_time_s": 277.78
           },
           {
-            "iterations": 4543,
-            "distance_km": 10.1089,
-            "travel_time_s": 885.52
+            "iterations": 2355,
+            "distance_km": 4.4109,
+            "travel_time_s": 387.35
           },
           {
-            "iterations": 58551,
-            "distance_km": 81.572,
-            "travel_time_s": 3392.04
+            "iterations": 3532,
+            "distance_km": 4.8463,
+            "travel_time_s": 356.04
           },
           {
-            "iterations": 23470,
-            "distance_km": 32.3006,
-            "travel_time_s": 1476.42
+            "iterations": 5203,
+            "distance_km": 5.0984,
+            "travel_time_s": 384.18
           }
         ],
-        "average": 27115.0
+        "average": 5744.5
       },
       "astar_manhattan": {
         "runs": [
           {
-            "iterations": 4214,
-            "distance_km": 27.8008,
-            "travel_time_s": 1868.15
+            "iterations": 2162,
+            "distance_km": 4.0109,
+            "travel_time_s": 305.18
           },
           {
-            "iterations": 15742,
-            "distance_km": 53.025,
-            "travel_time_s": 3547.66
+            "iterations": 4040,
+            "distance_km": 6.659,
+            "travel_time_s": 517.52
           },
           {
-            "iterations": 615,
-            "distance_km": 12.1855,
-            "travel_time_s": 518.32
+            "iterations": 3655,
+            "distance_km": 7.0334,
+            "travel_time_s": 525.25
           },
           {
-            "iterations": 31027,
-            "distance_km": 82.3968,
-            "travel_time_s": 3860.54
+            "iterations": 9114,
+            "distance_km": 9.7198,
+            "travel_time_s": 776.9
           },
           {
-            "iterations": 2519,
-            "distance_km": 16.8332,
-            "travel_time_s": 1224.06
+            "iterations": 2291,
+            "distance_km": 3.6389,
+            "travel_time_s": 349.06
           },
           {
-            "iterations": 19658,
-            "distance_km": 18.6108,
-            "travel_time_s": 1439.25
+            "iterations": 3497,
+            "distance_km": 9.8871,
+            "travel_time_s": 759.75
           },
           {
-            "iterations": 12773,
-            "distance_km": 26.1862,
-            "travel_time_s": 1461.68
+            "iterations": 925,
+            "distance_km": 3.9373,
+            "travel_time_s": 277.78
           },
           {
-            "iterations": 2068,
-            "distance_km": 10.1089,
-            "travel_time_s": 885.52
+            "iterations": 1095,
+            "distance_km": 4.4109,
+            "travel_time_s": 387.35
           },
           {
-            "iterations": 24062,
-            "distance_km": 81.572,
-            "travel_time_s": 3392.04
+            "iterations": 1338,
+            "distance_km": 4.8463,
+            "travel_time_s": 356.04
           },
           {
-            "iterations": 9382,
-            "distance_km": 32.3006,
-            "travel_time_s": 1476.42
+            "iterations": 1963,
+            "distance_km": 5.0984,
+            "travel_time_s": 384.18
           }
         ],
-        "average": 12206.0
+        "average": 3008.0
       },
       "astar_euclidean": {
         "runs": [
           {
-            "iterations": 4712,
-            "distance_km": 27.8008,
-            "travel_time_s": 1868.15
+            "iterations": 2504,
+            "distance_km": 4.0109,
+            "travel_time_s": 305.18
           },
           {
-            "iterations": 23299,
-            "distance_km": 53.025,
-            "travel_time_s": 3547.66
+            "iterations": 5028,
+            "distance_km": 6.659,
+            "travel_time_s": 517.52
           },
           {
-            "iterations": 1088,
-            "distance_km": 12.1855,
-            "travel_time_s": 518.32
+            "iterations": 4004,
+            "distance_km": 7.0334,
+            "travel_time_s": 525.25
           },
           {
-            "iterations": 35308,
-            "distance_km": 82.3968,
-            "travel_time_s": 3860.54
+            "iterations": 9506,
+            "distance_km": 9.7198,
+            "travel_time_s": 776.9
           },
           {
-            "iterations": 2778,
-            "distance_km": 16.8332,
-            "travel_time_s": 1224.06
+            "iterations": 2805,
+            "distance_km": 3.6389,
+            "travel_time_s": 349.06
           },
           {
-            "iterations": 22508,
-            "distance_km": 18.6108,
-            "travel_time_s": 1439.25
+            "iterations": 4012,
+            "distance_km": 9.8871,
+            "travel_time_s": 759.75
           },
           {
-            "iterations": 14978,
-            "distance_km": 26.1862,
-            "travel_time_s": 1461.68
+            "iterations": 1094,
+            "distance_km": 3.9373,
+            "travel_time_s": 277.78
           },
           {
-            "iterations": 2392,
-            "distance_km": 10.1089,
-            "travel_time_s": 885.52
+            "iterations": 1349,
+            "distance_km": 4.4109,
+            "travel_time_s": 387.35
           },
           {
-            "iterations": 39277,
-            "distance_km": 81.572,
-            "travel_time_s": 3392.04
+            "iterations": 1762,
+            "distance_km": 4.8463,
+            "travel_time_s": 356.04
           },
           {
-            "iterations": 12502,
-            "distance_km": 32.3006,
-            "travel_time_s": 1476.42
+            "iterations": 2490,
+            "distance_km": 5.0984,
+            "travel_time_s": 384.18
           }
         ],
-        "average": 15884.2
+        "average": 3455.4
       },
       "astar_haversine": {
         "runs": [
           {
-            "iterations": 4713,
-            "distance_km": 27.8008,
-            "travel_time_s": 1868.15
+            "iterations": 2504,
+            "distance_km": 4.0109,
+            "travel_time_s": 305.18
           },
           {
-            "iterations": 23292,
-            "distance_km": 53.025,
-            "travel_time_s": 3547.66
+            "iterations": 5028,
+            "distance_km": 6.659,
+            "travel_time_s": 517.52
           },
           {
-            "iterations": 1090,
-            "distance_km": 12.1855,
-            "travel_time_s": 518.32
+            "iterations": 4003,
+            "distance_km": 7.0334,
+            "travel_time_s": 525.25
           },
           {
-            "iterations": 35307,
-            "distance_km": 82.3968,
-            "travel_time_s": 3860.54
+            "iterations": 9506,
+            "distance_km": 9.7198,
+            "travel_time_s": 776.9
           },
           {
-            "iterations": 2779,
-            "distance_km": 16.8332,
-            "travel_time_s": 1224.06
+            "iterations": 2805,
+            "distance_km": 3.6389,
+            "travel_time_s": 349.06
           },
           {
-            "iterations": 22515,
-            "distance_km": 18.6108,
-            "travel_time_s": 1439.25
+            "iterations": 4020,
+            "distance_km": 9.8871,
+            "travel_time_s": 759.75
           },
           {
-            "iterations": 14982,
-            "distance_km": 26.1862,
-            "travel_time_s": 1461.68
+            "iterations": 1093,
+            "distance_km": 3.9373,
+            "travel_time_s": 277.78
           },
           {
-            "iterations": 2393,
-            "distance_km": 10.1089,
-            "travel_time_s": 885.52
+            "iterations": 1350,
+            "distance_km": 4.4109,
+            "travel_time_s": 387.35
           },
           {
-            "iterations": 39280,
-            "distance_km": 81.572,
-            "travel_time_s": 3392.04
+            "iterations": 1762,
+            "distance_km": 4.8463,
+            "travel_time_s": 356.04
           },
           {
-            "iterations": 12532,
-            "distance_km": 32.3006,
-            "travel_time_s": 1476.42
+            "iterations": 2492,
+            "distance_km": 5.0984,
+            "travel_time_s": 384.18
           }
         ],
-        "average": 15888.3
+        "average": 3456.3
       }
     }
   }
