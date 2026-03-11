@@ -9,7 +9,7 @@ import math
 import os
 import osmnx as ox
 import heapq
-from  utils import compute_weights, style_visited_edge, style_active_edge, reset_graph, reconstruct_path, get_global_max_speed
+from  utils import compute_weights, style_visited_edge, style_active_edge, reset_graph, reconstruct_path, get_global_max_speed, compact_json
 
 NUM_RUNS = 10   # number of random pairs per city
 
@@ -24,7 +24,7 @@ def heuristic_manhattan(G, orig, dest):
     h(n) = |x1 - x2| + |y1 - y2| """
     x1, y1 = G.nodes[orig]["x"], G.nodes[orig]["y"]
     x2, y2 = G.nodes[dest]["x"], G.nodes[dest]["y"]
-    return abs(x1 - x2) + abs(y1 - y2) #meters
+    return abs(x1 - x2) + abs(y1 - y2) #meters or degrees depending on graph projection
 
 def heuristic_euclidean(G, orig, dest):
     """ Compute Euclidean distance between two nodes based on their x/y coordinates. 
@@ -33,7 +33,7 @@ def heuristic_euclidean(G, orig, dest):
     x1, y1 = G.nodes[orig]["x"], G.nodes[orig]["y"]
     x2, y2 = G.nodes[dest]["x"], G.nodes[dest]["y"]
     # Use osmnx's built-in function 
-    return ox.distance.euclidean(y1, x1, y2, x2) #meters
+    return ox.distance.euclidean(y1, x1, y2, x2) #meters or degrees depending on graph projection
 
 def heuristic_haversine(G, orig, dest):
     """h(n) = great-circle distance via haversine formula (R = 6371 km). 
@@ -43,11 +43,17 @@ def heuristic_haversine(G, orig, dest):
     # Use osmnx's built-in function for great-circle distance
     return ox.distance.great_circle(lat1, lon1, lat2, lon2) #meters
 
-HEURISTICS = {
-    "manhattan" : heuristic_manhattan,
-    "euclidean" : heuristic_euclidean,
-    "haversine" : heuristic_haversine,
-}
+# (h_name, heuristic_func, use_projected_graph)
+# Manhattan and Euclidean are run twice: once on the original graph (lat/lon)
+# and once on the projected graph (metres).
+# Haversine always uses the original graph since great_circle() returns metres regardless.
+CONFIGS = [
+    ("manhattan",           heuristic_manhattan, False),
+    ("manhattan_projected", heuristic_manhattan, True),
+    ("euclidean",           heuristic_euclidean, False),
+    ("euclidean_projected", heuristic_euclidean, True),
+    ("haversine",           heuristic_haversine, False),
+]
 
 def astar(G, orig, dest, heuristic, max_speed=1):
     """Run A* algorithm from orig to dest using the provided heuristic function, return number of iterations."""
@@ -122,15 +128,12 @@ def main():
         print(f"  Using {len(pairs)} fixed pairs from Dijkstra run")
         G_original = G.copy()  # keep a copy of the original graph
         G_projected = ox.project_graph(G)  # project to metric for accurate distance calculations
-        for h_name, h_func in HEURISTICS.items():
+        for h_name, h_func, use_projected in CONFIGS:
             print(f"\n  {'─'*49}")
-            print(f"  Heuristic : A* [{h_name}]")
+            print(f"  Heuristic : A* [{h_name} | {'projected' if use_projected else 'original'} graph]")
             print(f"  {'─'*49}")
 
-            if h_name in ["euclidean", "manhattan"]:
-                G = G_projected  # use projected graph for these heuristics
-            elif h_name == "haversine":
-                G = G_original  # use original graph for haversine (lat/lon)
+            G = G_projected if use_projected else G_original
 
             for edge in G.edges:
                 G.edges[edge]["astar_uses"] = 0
@@ -142,7 +145,7 @@ def main():
                     print(f"    Run {i:2d}/{num_runs} | WARNING: no path found for this pair")
                     run_results.append({"iterations": None, "distance_km": None, "travel_time_s": None})
                     continue
-                city_acronym = "A" + city_name[:2].upper() + h_name[:3].upper()
+                city_acronym = "A" + city_name[:2].upper() + h_name.upper().replace("_", "")[:6]
                 fp = f"plots/astar/{city_abbr}/{h_name}/run{i:02d}_{city_acronym}.png"
                 dist, travel_time = reconstruct_path(G, start, end, plot=True, algorithm="astar", filepath=fp)
                 run_results.append({"iterations": steps, "distance_km": round(dist, 4), "travel_time_s": round(travel_time, 2)})
@@ -156,13 +159,15 @@ def main():
 
             # Update results for this city/heuristic
             all_results[city_name]["results"][f"astar_{h_name}"] = {
-                "runs": run_results,
-                "average": round(avg, 2),
+                "iterations":    [r["iterations"]    for r in run_results],
+                "distance_km":   [r["distance_km"]   for r in run_results],
+                "travel_time_s": [r["travel_time_s"] for r in run_results],
+                "average":       round(avg, 2),
             }
 
         # Write updated results after each city
         with open(results_fp, "w") as f:
-            json.dump(all_results, f, indent=2)
+            f.write(compact_json(all_results))
 
     print(f"\n  Results saved : {results_fp}")
 

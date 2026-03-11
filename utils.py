@@ -1,6 +1,19 @@
+import json
 import os
+import re
 import osmnx as ox
 import matplotlib.pyplot as plt
+
+def compact_json(data):
+    """Serialize data to JSON with objects indented but arrays on a single line."""
+    raw = json.dumps(data, indent=2)
+    # Collapse any array that spans multiple lines into a single line
+    raw = re.sub(
+        r'\[\n\s+((?:[^\[\]]*?\n\s+)*[^\[\]]*?)\]',
+        lambda m: '[' + ', '.join(t.rstrip(',') for t in m.group(1).split()) + ']',
+        raw,
+    )
+    return raw
 
 def reset_graph(G):
     """Reset graph attributes for a new run."""
@@ -39,7 +52,7 @@ def compute_weights(G):
         G.edges[edge]["maxspeed"] = maxspeed
         # Adding the "weight" attribute (time = distance / speed)
         maxspeed_ms = maxspeed * 1000 / 3600  # convert km/h to m/s
-        G.edges[edge]["weight"] = G.edges[edge]["length"] / maxspeed_ms 
+        G.edges[edge]["weight"] = G.edges[edge]["length"] / maxspeed_ms
 
 def style_unvisited_edge(G, edge):        
     G.edges[edge]["color"] = "gray"

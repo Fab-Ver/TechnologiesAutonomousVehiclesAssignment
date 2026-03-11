@@ -92,22 +92,21 @@ Each node represents a road junction and stores geographic coordinates (longitud
 
 \subsection{Edge Weight Computation}
 
-The weight assigned to each edge models travel time rather than physical distance, as travel time is a more practical optimisation criterion for vehicle routing.
-The weight is defined to represent the physical travel time in seconds:
+The weight assigned to each edge models travel time rather than physical distance, as travel time is a more practical optimization criterion for vehicle routing.
+The weight assigned to each edge is:
 \[
-  w(e) = \frac{\ell(e)}{v_{\max}(e) / 3.6}
+  w(e) = \frac{\ell(e)}{v_{\max}^{\text{m/s}}(e)}
 \]
-where $\ell(e)$ is the length of edge $e$ in metres and $v_{\max}(e)$ is the posted speed limit in km/h.
-Dividing the speed limit by 3.6 converts it to m/s, ensuring dimensional consistency.
+where $\ell(e)$ is the length of edge $e$ in metres and $v_{\max}^{\text{m/s}}(e)$ is the posted speed limit converted to m/s.
+The resulting weight equals the true travel time $t(e)$ in seconds; the algorithm therefore minimizes total travel time directly.
 For edges where no speed limit is recorded in OpenStreetMap, a default value of 40~km/h is assumed.
 
 \subsection{Dijkstra's Algorithm}
 
 Dijkstra's algorithm is implemented using a binary min-heap (\texttt{heapq}) as the priority queue.
-Each node maintains a \texttt{distance} label, initialised to $+\infty$ except for the source, which is set to 0.
-At each iteration, the node with the smallest tentative distance is extracted; if it has already been marked as visited, it is skipped; otherwise, all outgoing neighbours are relaxed.
+Each node maintains a \texttt{distance} label, initialized to $+\infty$ except for the source, which is set to 0.
+At each iteration, the node with the smallest tentative distance is extracted; if it has already been marked as visited, it is skipped; otherwise, all outgoing neighbors are relaxed.
 The algorithm terminates as soon as the destination node is extracted from the queue, guaranteeing optimality on graphs with non-negative edge weights.
-The number of iterations is defined as the count of nodes successfully processed (i.e.,\ extracted and not yet visited) before termination. 
 
 \subsection{A* Algorithm}
 \label{sec:astar_design}
@@ -118,22 +117,21 @@ The priority of each node in the queue is:
   f(n) = g(n) + h(n)
 \]
 where $g(n)$ is the exact travel-time cost accumulated from the source to $n$.
-To ensure dimensional consistency between $g(n)$ and $h(n)$, each distance-based heuristic estimate (in metres) is normalised by the maximum speed limit $v_{\max}^{\star}$ observed in the graph:
+To ensure dimensional consistency between $g(n)$ and $h(n)$, each distance-based heuristic estimate is normalized by the maximum speed limit $v_{\max}^{\star}$ observed in the graph:
 \[
   h(n) = \frac{d(n,\, \text{dest})}{v_{\max}^{\star}}
 \]
-For the Euclidean and Haversine variants, this normalisation guarantees admissibility: since any road path between two nodes is at least as long as the straight-line distance between them, dividing the straight-line estimate by $v_{\max}^{\star}$ yields a strict lower bound on the remaining travel time.
-The Manhattan variant uses a distance measure that satisfies $d_{\text{Man}} \geq d_{\text{Euc}}$ and therefore does not carry a formal admissibility guarantee; A* optimality is not theoretically assured when using this heuristic, although no suboptimal path was observed in the current experimental runs.
+For the Euclidean and Haversine variants, this normalization guarantees both admissibility and consistency: since any road path between two nodes is at least as long as the straight-line distance between them, dividing the straight-line estimate by $v_{\max}^{\star}$ yields a lower bound on the remaining travel time; furthermore, geometric distances satisfy the triangle inequality, which ensures the consistency condition required for optimality in graph-search A* (where visited nodes are not re-expanded).
+The Manhattan variant satisfies $d_{\text{Man}} \geq d_{\text{Euc}}$ and therefore does not carry a formal admissibility guarantee.
 Three functions are used to compute the geometric distance $d$:
 
 \begin{itemize}
-  \item \textbf{Manhattan}: $d = |x_1 - x_2| + |y_1 - y_2|$, where $(x_i, y_i)$ are projected metric coordinates in metres.
+  \item \textbf{Manhattan}: $d = |x_1 - x_2| + |y_1 - y_2|$
 
   \item \textbf{Euclidean}:
   \[
     d = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}
   \]
-  where $(x_i, y_i)$ are projected metric coordinates in metres.
   The computation is delegated to \texttt{ox.distance.euclidean}.
 
   \item \textbf{Haversine}: the great-circle distance between two points on the Earth's surface,
@@ -147,16 +145,24 @@ Three functions are used to compute the geometric distance $d$:
   The computation is delegated to \texttt{ox.distance.great\_circle}, which operates on geographic (lat/lon) coordinates.
 \end{itemize}
 
-For the Manhattan and Euclidean variants, the graph is first projected to a metric coordinate reference system via \texttt{ox.project\_graph}, so that coordinate differences correspond to actual distances in metres.
-The Haversine variant operates on the original unprojected graph, as the formula inherently accounts for the curvature of the Earth.
-All three variants share the same min-heap structure, early-termination condition, and visited-node logic as the Dijkstra implementation.
+All three variants were first evaluated on the original unprojected graph (geographic coordinates in decimal degrees), sharing the same min-heap structure, early-termination condition, and visited-node logic as the Dijkstra implementation.
+For the Haversine variant this is correct by design: \texttt{ox.distance.great\_circle} accepts latitude and longitude and always returns a distance in metres, placing $h(n)$ on the same scale as the edge weights.
+For the Manhattan and Euclidean variants, however, distances are computed directly from latitude and longitude differences, which lie in the range $10^{-3}$--$10^{-2}$ degrees for typical city-scale paths.
+After normalization by $v_{\max}^{\star}$ (in m/s), these values are several orders of magnitude smaller than the accumulated $g(n)$ terms, making $h(n) \approx 0$ and causing A* to explore nodes in the same order as Dijkstra.
+
+To examine how the choice of coordinate system affects heuristic quality, the Manhattan and Euclidean variants were additionally evaluated on a projected version of the graph.
+A projected graph is obtained by converting the original geographic coordinates, expressed in decimal degrees of longitude and latitude, to a planar metric coordinate reference system (CRS).
+Concretely, \texttt{ox.project\_graph} projects all node coordinates to the appropriate local UTM zone, replacing degree-based values with positions in metres, edge lengths are recalculated in the new coordinate system.
+On the projected graph, the $x$ and $y$ coordinate differences used by the Manhattan and Euclidean functions are in metres, placing $h(n)$ on the same scale as the edge weights after normalization by $v_{\max}^{\star}$.
+The effect of this coordinate conversion on the number of iterations is evaluated in Section~\ref{sec:results_aosta}.
 
 \section{Experiments}
 
 \subsection{Datasets}
 
 Experiments are conducted on the road networks of two cities: Aosta and Turin.
-These cities are selected to represent graphs of very different scales, allowing the comparison of algorithm behaviour under both small and large network conditions.
+These cities are selected to represent graphs of very different scales, allowing the comparison of algorithm behavior under both small and large network conditions.
+Road networks are downloaded and loaded using \texttt{osmnx} version~2.1.0.
 The graph sizes are reported in Table~\ref{tab:graphs}.
 
 \begin{table}[H]
@@ -181,11 +187,11 @@ The ten validated pairs are then saved and reused for all three A* variants, ens
 
 \subsection{Evaluation Metrics}
 
-Two metrics are recorded for each run:
+Three metrics are recorded for each run:
 \begin{itemize}
-  \item \textbf{Number of iterations}: the count of nodes successfully extracted from the priority queue, marked as visited, and whose outgoing neighbours are relaxed, before the destination node is extracted. This is the primary metric for comparing the computational efficiency of the algorithms.
-  \item \textbf{Path length} (km): the total length of the reconstructed path in kilometres. This metric is used to verify that the paths returned by A* are optimal, i.e.,\ identical to those returned by Dijkstra on the same pair.
-  \item \textbf{Travel time} (s): the total travel time of the reconstructed path in seconds, computed as the sum of the edge weights along the path. Since the edge weight represents the physical travel time (Section~2.2), this metric provides a second, independent check of solution optimality: an A* path is confirmed optimal when both its length and its travel time match those of the Dijkstra solution.
+  \item \textbf{Number of iterations}: the count of nodes successfully extracted from the priority queue, marked as visited, and whose outgoing neighbors are relaxed, before the destination node is extracted. This is the primary metric for comparing the computational efficiency of the algorithms.
+  \item \textbf{Path length} (km): the total length of the reconstructed path in kilometers. This metric is used to verify that the paths returned by A* are optimal, i.e.,\ identical to those returned by Dijkstra on the same pair.
+  \item \textbf{Travel time} (s): the total travel time of the reconstructed path in seconds, computed as the sum of the edge weights along the path. Since the edge weight represents the physical travel time, this metric provides a second, independent check of solution optimality: an A* path is confirmed optimal when both its length and its travel time match those of the Dijkstra solution.
 \end{itemize}
 
 The average number of iterations over the ten runs is used as the summary statistic for each algorithm–city combination.
@@ -194,132 +200,129 @@ The average number of iterations over the ten runs is used as the summary statis
 
 \subsection{Aosta}\label{sec:results_aosta}
 
-Table~\ref{tab:results_aosta} reports the number of iterations per run for all four algorithms on the Aosta network.
-All A* variants reduce the number of iterations with respect to Dijkstra in the majority of runs.
-Path lengths and travel times are identical across Dijkstra and all A* variants for all runs, confirming optimality of all variants on these particular origin-destination pairs.
-Figure~\ref{fig:paths_aosta} shows the paths produced on run~4 (8.69~km), where all four solutions follow the same route. 
+Table~\ref{tab:results_aosta} reports the number of iterations per run for all six algorithm configurations on the Aosta network.
+The unprojected Manhattan and Euclidean variants produce iteration counts identical to Dijkstra, since their heuristic values are negligible when computed from geographic coordinates (Section~\ref{sec:astar_design}).
+The projected variants and Haversine all reduce the number of iterations meaningfully: projected Manhattan achieves the largest reduction, while projected Euclidean and Haversine perform similarly.
+Paths and travel times are identical across all algorithms and runs, with one exception: on run~9, A* Manhattan (projected) found a suboptimal path (2.8683~km, 226.40~s) compared to the optimal solution found by all other variants (2.8811~km, 222.97~s), marked with~$^\dagger$ in the table.
+Figure~\ref{fig:paths_aosta} shows the paths produced on run~9, chosen as the representative example since it exhibits this divergence.
 
 \begin{table}[H]
   \centering
   \small
-  \begin{tabular}{crrrrr}
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{crrrrrrrr}
     \toprule
-    \textbf{Run} & \textbf{Dijkstra} & \textbf{A* Man.} & \textbf{A* Euc.} & \textbf{A* Hav.} & \textbf{Dist.~(km)} \\
+    \textbf{Run} & \textbf{Dijkstra} & \textbf{Man.} & \textbf{Man.-P} & \textbf{Euc.} & \textbf{Euc.-P} & \textbf{Hav.} & \textbf{Dist.~(km)} & \textbf{Time~(s)} \\
     \midrule
-    1  &  106 &   62 &   62 &   62 & 2.45 \\
-    2  &  563 &   83 &  121 &  121 & 4.69 \\
-    3  &  724 &  501 &  580 &  580 & 4.15 \\
-    4  &  751 &  337 &  397 &  397 & 8.69 \\
-    5  &  211 &   92 &  116 &  116 & 1.60 \\
-    6  &  717 &  412 &  531 &  532 & 4.33 \\
-    7  &  489 &  157 &  204 &  204 & 2.68 \\
-    8  &  464 &  113 &  132 &  132 & 1.78 \\
-    9  &  680 &  144 &  190 &  198 & 4.43 \\
-    10 &  202 &   86 &   98 &   98 & 4.25 \\
+    1  & 189 & 189 &   69 & 189 &  87 &  87 & 1.1034 & 112.11 \\
+    2  & 425 & 425 &  170 & 425 & 244 & 244 & 1.6301 & 182.85 \\
+    3  & 615 & 615 &  220 & 615 & 269 & 269 & 2.6132 & 240.84 \\
+    4  & 252 & 252 &   27 & 252 &  44 &  44 & 1.0240 & 104.38 \\
+    5  & 748 & 748 &  433 & 748 & 569 & 569 & 5.0599 & 410.44 \\
+    6  & 761 & 761 &  577 & 761 & 628 & 628 & 4.0024 & 355.85 \\
+    7  & 106 & 106 &   13 & 106 &  13 &  14 & 0.9574 &  68.93 \\
+    8  & 288 & 288 &   76 & 288 & 108 & 108 & 1.5966 & 141.76 \\
+    9  & 633 & 633 & $55^\dagger$ & 633 & 133 & 133 & 2.8811 & 222.97 \\
+    10 &  23 &  23 &   14 &  23 &  16 &  16 & 0.6414 &  54.49 \\
     \midrule
-    \textbf{Avg} & 490.7 & 198.7 & 243.1 & 244.0 & \\
-    \textbf{Impr.} & --- & $-59.5\%$ & $-50.5\%$ & $-50.3\%$ & \\
+    \textbf{Avg}   & 404.0 & 404.0 &  165.4 & 404.0 & 211.1 & 211.2 & & \\
+    \textbf{Impr.} & ---   & $0\%$ & $-59.1\%$ & $0\%$ & $-47.7\%$ & $-47.7\%$ & & \\
     \bottomrule
   \end{tabular}
-  \caption{Iterations per run and average improvement over Dijkstra --- Aosta (825 nodes, 1\,723 edges).}
+  \vspace{3pt}
+  {\footnotesize $^\dagger$A* Manhattan (projected) on run~9 found a suboptimal path: 2.8683~km, 226.40~s (vs.\ optimal 2.8811~km, 222.97~s).}
+  \caption{Iterations per run and average improvement over Dijkstra - Aosta (825~nodes, 1\,723~edges). Dist.\ and Time refer to the optimal path found by Dijkstra and all admissible variants; $^\dagger$ marks a suboptimal result.}
   \label{tab:results_aosta}
 \end{table}
 
 \begin{figure}[H]
   \centering
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/dijkstra/aosta/run04_DAO.png}
-    \caption{Dijkstra (751 iter.)}
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/dijkstra/aosta/run09_DAO.png}
+    \caption{Dijkstra}
   \end{subfigure}\hfill
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/aosta/manhattan/run04_AAOMAN.png}
-    \caption{A* Manhattan (337 iter.)}
-  \end{subfigure}
-  \vspace{0.5em}
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/aosta/euclidean/run04_AAOEUC.png}
-    \caption{A* Euclidean (397 iter.)}
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/manhattan/run09_AAOMANHAT.png}
+    \caption{A* Manhattan}
   \end{subfigure}\hfill
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/aosta/haversine/run04_AAOHAV.png}
-    \caption{A* Haversine (397 iter.)}
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/manhattan_projected/run09_AAOMANHAT.png}
+    \caption{A* Manhattan-P $^\dagger$}
   \end{subfigure}
-  \caption{Paths returned by each algorithm on run~4 in Aosta (8.69~km). All four paths are identical, verifying optimality.}
+
+  \medskip
+
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/euclidean/run09_AAOEUCLID.png}
+    \caption{A* Euclidean}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/euclidean_projected/run09_AAOEUCLID.png}
+    \caption{A* Euclidean-P }
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.30\textwidth}
+    \includegraphics[width=\textwidth]{../plots/astar/aosta/haversine/run09_AAOHAVERS.png}
+    \caption{A* Haversine}
+  \end{subfigure}
+  \caption{Paths returned by each algorithm on run~9 in Aosta. The projected Manhattan variant found a suboptimal path ($^\dagger$); all other variants return the optimal solution.}
   \label{fig:paths_aosta}
 \end{figure}
 
 \subsection{Turin}
 
 Table~\ref{tab:results_turin} reports the results for the Turin network, which is roughly 14 times larger than Aosta.
-Path lengths and travel times are identical across all algorithms for every run, confirming optimality.
-Figure~\ref{fig:paths_turin} shows the paths produced on run~4 (9.72~km).
+As in Aosta, the unprojected Manhattan and Euclidean variants produce iteration counts identical to Dijkstra.
+Projected Manhattan, projected Euclidean, and Haversine all achieve meaningful reductions.
+Path lengths and travel times are identical across all algorithms for every run, confirming that all variants find the same optimal path.
 
 \begin{table}[H]
   \centering
   \small
-  \begin{tabular}{crrrrr}
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{crrrrrrrr}
     \toprule
-    \textbf{Run} & \textbf{Dijkstra} & \textbf{A* Man.} & \textbf{A* Euc.} & \textbf{A* Hav.} & \textbf{Dist.~(km)} \\
+    \textbf{Run} & \textbf{Dijkstra} & \textbf{Man.} & \textbf{Man.-P} & \textbf{Euc.} & \textbf{Euc.-P} & \textbf{Hav.} & \textbf{Dist.~(km)} & \textbf{Time~(s)} \\
     \midrule
-    1  &  4\,949 &  2\,162 &  2\,504 &  2\,504 &  4.01 \\
-    2  &  9\,506 &  4\,040 &  5\,028 &  5\,028 &  6.66 \\
-    3  &  6\,694 &  3\,655 &  4\,004 &  4\,003 &  7.03 \\
-    4  & 10\,908 &  9\,114 &  9\,506 &  9\,506 &  9.72 \\
-    5  &  5\,100 &  2\,291 &  2\,805 &  2\,805 &  3.64 \\
-    6  &  6\,971 &  3\,497 &  4\,012 &  4\,020 &  9.89 \\
-    7  &  2\,227 &    925 &  1\,094 &  1\,093 &  3.94 \\
-    8  &  2\,355 &  1\,095 &  1\,349 &  1\,350 &  4.41 \\
-    9  &  3\,532 &  1\,338 &  1\,762 &  1\,762 &  4.85 \\
-    10 &  5\,203 &  1\,963 &  2\,490 &  2\,492 &  5.10 \\
+    1  & 9\,927 & 9\,927 & 6\,314 & 9\,927 & 7\,128 & 7\,135 & 8.8877 & 633.13 \\
+    2  & 5\,100 & 5\,100 & 2\,775 & 5\,100 & 3\,230 & 3\,232 & 5.6477 & 423.60 \\
+    3  & 7\,508 & 7\,508 & 5\,773 & 7\,508 & 6\,379 & 6\,380 & 9.2594 & 697.13 \\
+    4  & 2\,233 & 2\,233 &   813 & 2\,233 & 1\,004 & 1\,004 & 3.6459 & 268.79 \\
+    5  & 8\,985 & 8\,985 & 4\,762 & 8\,985 & 5\,373 & 5\,375 & 6.9509 & 528.00 \\
+    6  & 6\,249 & 6\,249 & 3\,926 & 6\,249 & 4\,479 & 4\,481 & 7.0667 & 525.64 \\
+    7  & 4\,679 & 4\,679 & 1\,888 & 4\,679 & 2\,383 & 2\,383 & 3.7012 & 329.82 \\
+    8  & 4\,399 & 4\,399 & 2\,939 & 4\,399 & 3\,089 & 3\,093 & 8.3023 & 625.26 \\
+    9  & 5\,947 & 5\,947 & 2\,815 & 5\,947 & 3\,197 & 3\,197 & 7.0070 & 534.06 \\
+    10 & 4\,001 & 4\,001 & 1\,150 & 4\,001 & 1\,653 & 1\,655 & 4.3905 & 316.11 \\
     \midrule
-    \textbf{Avg} & 5\,744.5 & 3\,008.0 & 3\,455.4 & 3\,456.3 & \\
-    \textbf{Impr.} & --- & $-47.6\%$ & $-39.8\%$ & $-39.8\%$ & \\
+    \textbf{Avg}   & 5\,902.8 & 5\,902.8 & 3\,315.5 & 5\,902.8 & 3\,791.5 & 3\,793.5 & & \\
+    \textbf{Impr.} & ---      & $0\%$    & $-43.8\%$ & $0\%$   & $-35.8\%$ & $-35.7\%$ & & \\
     \bottomrule
   \end{tabular}
-  \caption{Iterations per run and average improvement over Dijkstra --- Turin (11\,766 nodes, 25\,198 edges).}
+  \caption{Iterations per run and average improvement over Dijkstra --- Turin (11\,766~nodes, 25\,198~edges).}
   \label{tab:results_turin}
 \end{table}
 
-\begin{figure}[H]
-  \centering
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/dijkstra/turin/run04_DTU.png}
-    \caption{Dijkstra (10\,908 iter.)}
-  \end{subfigure}\hfill
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/turin/manhattan/run04_ATUMAN.png}
-    \caption{A* Manhattan (9\,114 iter.)}
-  \end{subfigure}
-  \vspace{0.5em}
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/turin/euclidean/run04_ATUEUC.png}
-    \caption{A* Euclidean (9\,506 iter.)}
-  \end{subfigure}\hfill
-  \begin{subfigure}[b]{0.38\textwidth}
-    \includegraphics[width=\textwidth]{../plots/astar/turin/haversine/run04_ATUHAV.png}
-    \caption{A* Haversine (9\,506 iter.)}
-  \end{subfigure}
-  \caption{Paths returned by each algorithm on run~4 in Turin (9.72~km). All four paths are identical, verifying optimality.}
-  \label{fig:paths_turin}
-\end{figure}
-
 \subsection{Discussion}
 
-Across both cities, all A* variants consistently reduce the number of iterations with respect to Dijkstra.
-Path lengths and travel times are identical for all algorithm--run combinations, confirming optimality of all variants on the tested origin-destination pairs.
-For these particular origin-destination pairs the Manhattan heuristic achieves a $59.5\%$ reduction in Aosta and a $47.6\%$ reduction in Turin.
-In both cases the reduction in absolute terms is substantial: in Turin, where Dijkstra explores an average of 5\,745 nodes before reaching the destination, A* Manhattan reduces this to 3\,008, a saving of roughly 2\,700 iterations per query.
+Path lengths and travel times are identical across all algorithm-run combinations in both cities, confirming optimal solutions on every run.
+The sole exception is A* Manhattan (projected) on run~9 in Aosta, which found a suboptimal path.
+This is a direct consequence of the Manhattan heuristic not being admissible: by overestimating the remaining cost on run~9, A* discards the true optimal branch before visiting it, committing to a suboptimal solution.
+A* Euclidean~(projected), which uses the same projected graph but with an admissible and consistent heuristic, correctly recovers the optimal solution.
 
-Among the three heuristics, Manhattan consistently outperforms both Euclidean and Haversine in terms of iterations.
-This can be attributed to the fact that the Manhattan distance satisfies $d_{\text{Man}} \geq d_{\text{Euc}}$ for any two points in the plane.
-Normalising by $v_{\max}^{\star}$ yields a heuristic value that is always at least as large as the Euclidean one, which biases the search more aggressively towards the destination and reduces the number of nodes explored.
-Note, however, that this also makes the Manhattan heuristic technically non-admissible: being larger than the Euclidean lower bound, it is not strictly guaranteed to underestimate the true remaining travel time, and path optimality cannot be formally proved for this variant.
+The unprojected Manhattan and Euclidean variants produce iteration counts identical to Dijkstra in both cities (0\% improvement).
+This confirms the analysis in Section~\ref{sec:astar_design}: coordinate differences in decimal degrees are several orders of magnitude smaller than the edge-weight values, so $h(n) \approx 0$ and A* degenerates to Dijkstra.
+Evaluating the same heuristics on the projected graph shows substantially different behavior.
+Projected Manhattan achieves the largest reduction: $-59.1\%$ in Aosta and $-43.8\%$ in Turin.
+Projected Euclidean and Haversine perform similarly in both cities: in Aosta, $-47.7\%$ and $-47.7\%$ respectively; in Turin, $-35.8\%$  and $-35.7\%$.
+The near-identical performance of projected Euclidean and Haversine is expected: at the spatial scale of a single city, the Earth's curvature is negligible, and the great-circle distance computed by the Haversine formula closely approximates the Euclidean distance on a flat plane.
 
-The Euclidean and Haversine variants produce nearly identical results in both cities.
-This is expected: at the spatial scale of a single city, the Earth's curvature is negligible, and the great-circle distance computed by the Haversine formula approximates the Euclidean distance on a flat plane.
+The larger reduction achieved by projected Manhattan compared to projected Euclidean is consistent with the known behavior of overestimating heuristics: by assigning higher $f(n)$ values to nodes farther from the goal, Manhattan focuses the search more aggressively, at the cost of admissibility, as evidenced by the suboptimal result on run~9 in Aosta.
 
-Overall, the results demonstrate that A* can significantly reduce the computational effort required to find optimal paths in road networks, especially as the graph size increases.
-The choice of heuristic also plays a crucial role, with the Manhattan distance providing the most effective guidance in this context, but at the cost of losing the theoretical guarantee of optimality.
+Overall, the results confirm that the effectiveness of A* depends on the dimensional consistency between the heuristic and the edge weights.
+When node coordinates are in metres (projected graph), all three heuristic functions provide meaningful guidance; when coordinates are in decimal degrees (unprojected graph), only Haversine produces a usable estimate, since \texttt{ox.distance.great\_circle} always returns distances in metres regardless of the input coordinate system.
+
+The experiments demonstrate that A* can substantially reduce the number of node expansions required to find a shortest path in road networks, regardless of graph scale.
+The choice of heuristic plays a crucial role: Manhattan provides the most aggressive pruning, but at the cost of the optimality guarantee; Euclidean and Haversine offer a good trade-off, achieving meaningful reductions while preserving correctness.
 
 % --- Appendices (optional) ---
 %\appendix

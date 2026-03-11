@@ -9,7 +9,7 @@ import osmnx as ox
 import random
 import heapq
 import os 
-from  utils import compute_weights, style_visited_edge, style_active_edge, reset_graph, reconstruct_path
+from  utils import compute_weights, style_visited_edge, style_active_edge, reset_graph, reconstruct_path, compact_json
 
 NUM_RUNS = 10   # number of random pairs per city
 
@@ -113,17 +113,18 @@ def main():
         all_results[city_name] = {
             "nodes": len(G.nodes),
             "edges": len(G.edges),
-            "pairs": pairs,
             "results": {
                 "dijkstra": {
-                    "runs": run_results,
-                    "average": round(avg, 2),
+                    "iterations":    [r["iterations"]    for r in run_results],
+                    "distance_km":   [r["distance_km"]   for r in run_results],
+                    "travel_time_s": [r["travel_time_s"] for r in run_results],
+                    "average":       round(avg, 2),
                 }
             }
         }
 
     with open(results_fp, "w") as f:
-        json.dump(all_results, f, indent=2)
+        f.write(compact_json(all_results))
     print(f"\n  Results saved : {results_fp}")
 
 
